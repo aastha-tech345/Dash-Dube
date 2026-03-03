@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { Plus, Package, TrendingUp, DollarSign, RefreshCw, ArrowRight, Truck, ClipboardCheck, AlertTriangle, Search } from "lucide-react";
-import { dashboardStats, storageCapacity, recentActivity, inDemandItems } from "@/data/mockData";
+import { Plus, Package, DollarSign, RefreshCw, Truck, ClipboardCheck, AlertTriangle, Search } from "lucide-react";
+import { dashboardStats, storageCapacity, recentActivity, inDemandItems as initialItems } from "@/data/mockData";
 import StatusBadge from "@/components/shared/StatusBadge";
 import NewEntryDialog from "@/components/dashboard/NewEntryDialog";
 
 export default function Dashboard() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [items] = useState(initialItems);
+  const [search, setSearch] = useState("");
+
+  const filteredItems = items.filter((item) =>
+    !search || item.name.toLowerCase().includes(search.toLowerCase()) || item.sku.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div>
@@ -122,7 +128,13 @@ export default function Dashboard() {
           <h3 className="text-sm font-semibold">In-Demand Items</h3>
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input type="text" placeholder="Search products..." className="input-field pl-9 w-48" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="input-field pl-9 w-48"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -137,7 +149,7 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {inDemandItems.map((item) => (
+              {filteredItems.map((item) => (
                 <tr key={item.sku}>
                   <td className="font-medium">{item.name}</td>
                   <td className="text-muted-foreground">{item.sku}</td>
@@ -146,6 +158,9 @@ export default function Dashboard() {
                   <td className="text-muted-foreground">{item.location}</td>
                 </tr>
               ))}
+              {filteredItems.length === 0 && (
+                <tr><td colSpan={5} className="text-center text-muted-foreground py-8">No items found.</td></tr>
+              )}
             </tbody>
           </table>
         </div>

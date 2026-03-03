@@ -71,9 +71,15 @@
   * {
     @apply border-border;
   }
-  body {
+  html, body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', sans-serif;
+    height: 100%;
+    overflow: hidden;
+  }
+  #root {
+    height: 100%;
+    overflow: hidden;
   }
 }
 

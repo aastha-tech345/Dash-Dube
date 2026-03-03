@@ -18,7 +18,7 @@ export default function AppSidebar() {
   };
 
   return (
-    <aside className="w-[220px] min-h-screen border-r border-border bg-card flex flex-col flex-shrink-0 max-lg:hidden">
+    <aside className="w-[220px] h-screen border-r border-border bg-card flex flex-col flex-shrink-0 max-lg:hidden overflow-hidden">
       <div className="p-4 border-b border-border">
         <Link to="/" className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
