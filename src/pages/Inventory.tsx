@@ -1,10 +1,23 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Package, TrendingUp, AlertTriangle, ArrowRightLeft } from "lucide-react";
-import { inventoryProducts, inventorySummary } from "@/data/mockData";
+import { Plus, Search, Package, TrendingUp, AlertTriangle } from "lucide-react";
+import { inventoryProducts as initialProducts, inventorySummary } from "@/data/mockData";
 import StatusBadge from "@/components/shared/StatusBadge";
 import Pagination from "@/components/shared/Pagination";
 
 export default function Inventory() {
+  const [products, setProducts] = useState(initialProducts);
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+
+  const filtered = products.filter((p) => {
+    const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.id.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = !categoryFilter || p.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  const categories = [...new Set(initialProducts.map((p) => p.category))];
+
   return (
     <div>
       <div className="flex items-start justify-between mb-6">
@@ -22,11 +35,28 @@ export default function Inventory() {
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[200px] max-w-xs">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input type="text" placeholder="Search products, SKU..." className="input-field pl-9" />
+            <input
+              type="text"
+              placeholder="Search products, SKU..."
+              className="input-field pl-9"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
-          <button className="btn-outline text-xs">Category</button>
-          <button className="btn-outline text-xs">Brand</button>
-          <button className="btn-outline text-xs">Location</button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
+              className={`btn-outline text-xs ${categoryFilter === cat ? "ring-2 ring-primary/30" : ""}`}
+            >
+              {cat}
+            </button>
+          ))}
+          {categoryFilter && (
+            <button onClick={() => setCategoryFilter(null)} className="text-xs text-muted-foreground hover:text-foreground">
+              Clear
+            </button>
+          )}
         </div>
       </div>
 
@@ -44,7 +74,7 @@ export default function Inventory() {
             </tr>
           </thead>
           <tbody>
-            {inventoryProducts.map((p) => (
+            {filtered.map((p) => (
               <tr key={p.id}>
                 <td className="text-muted-foreground text-xs">{p.id}</td>
                 <td>
@@ -65,16 +95,22 @@ export default function Inventory() {
                 <td>{p.purchasePrice}</td>
                 <td className="font-medium">{p.salePrice}</td>
                 <td>
-                  <span className={`flex items-center gap-1 text-xs font-medium ${p.status === "Active" ? "text-emerald-500" : "text-muted-foreground"}`}>
+                  <button
+                    onClick={() => setProducts(products.map((item) => item.id === p.id ? { ...item, status: item.status === "Active" ? "Inactive" : "Active" } : item))}
+                    className={`flex items-center gap-1 text-xs font-medium cursor-pointer ${p.status === "Active" ? "text-emerald-500" : "text-muted-foreground"}`}
+                  >
                     <span className={`w-1.5 h-1.5 rounded-full ${p.status === "Active" ? "bg-emerald-500" : "bg-muted-foreground"}`} />
                     {p.status}
-                  </span>
+                  </button>
                 </td>
               </tr>
             ))}
+            {filtered.length === 0 && (
+              <tr><td colSpan={6} className="text-center text-muted-foreground py-8">No products found.</td></tr>
+            )}
           </tbody>
         </table>
-        <Pagination current={1} total={3} showingText="Showing 1 to 5 of 42 products" />
+        {filtered.length > 0 && <Pagination current={1} total={1} showingText={`Showing ${filtered.length} of ${products.length} products`} />}
       </div>
 
       {/* Summary Cards */}
