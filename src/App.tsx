@@ -15,6 +15,9 @@ import AddProduct from "./pages/AddProduct";
 import Infrastructure from "./pages/Infrastructure";
 import CreateWarehouse from "./pages/CreateWarehouse";
 import CreateZone from "./pages/CreateZone";
+import CreateRack from "./pages/CreateRack";
+import CreateShelf from "./pages/CreateShelf";
+import CreateBin from "./pages/CreateBin";
 import StockIn from "./pages/StockIn";
 import StockOut from "./pages/StockOut";
 import NotFound from "./pages/NotFound";
@@ -46,6 +49,9 @@ const AppRoutes = () => {
                 <Route path="/infrastructure" element={<Infrastructure />} />
                 <Route path="/infrastructure/create-warehouse" element={<CreateWarehouse />} />
                 <Route path="/infrastructure/create-zone" element={<CreateZone />} />
+                <Route path="/infrastructure/create-rack" element={<CreateRack />} />
+                <Route path="/infrastructure/create-shelf" element={<CreateShelf />} />
+                <Route path="/infrastructure/create-bin" element={<CreateBin />} />
                 <Route path="/stock-in" element={<StockIn />} />
                 <Route path="/stock-out" element={<StockOut />} />
               </Route>
@@ -65,7 +71,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_relativeSplatPath: true }}>
             <AppRoutes />
           </BrowserRouter>
         </TooltipProvider>
