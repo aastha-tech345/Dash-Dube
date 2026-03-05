@@ -17,7 +17,7 @@ import type { WareHouseResponse, ZoneResponse, RackResponse, ShelfResponse, BinR
 
 import { Eye, Layers, CheckCircle } from "lucide-react";
 
-const tabs = ["Warehouses", "Zones", "Racks", "Shelves", "Bins"];
+const tabs = ["Warehouses", "Zones", "Racks", "Shelves", "Abhi", "Bins"];
 
 const features = [
   { icon: Eye, color: "stat-icon-blue", title: "Hierarchical View", desc: "Easily map your warehouse from global location down to individual picking bins." },
@@ -43,12 +43,14 @@ export default function Infrastructure() {
 
   const createLabel = activeTab === "Warehouses" ? "Create Warehouse" :
     activeTab === "Zones" ? "Create Zone" :
-    activeTab === "Racks" ? "Create Rack" : `Create ${activeTab.slice(0, -1)}`;
+    activeTab === "Racks" ? "Create Rack" :
+    activeTab === "Abhi" ? "Create Abhi" : `Create ${activeTab.slice(0, -1)}`;
 
   const createLink = activeTab === "Warehouses" ? "/infrastructure/create-warehouse" :
     activeTab === "Zones" ? "/infrastructure/create-zone" :
     activeTab === "Racks" ? "/infrastructure/create-rack" :
     activeTab === "Shelves" ? "/infrastructure/create-shelf" :
+    activeTab === "Abhi" ? "/infrastructure/create-abhi" :
     activeTab === "Bins" ? "/infrastructure/create-bin" : "#";
 
   const handleCreateClick = () => {
@@ -78,6 +80,14 @@ export default function Infrastructure() {
         case 'Shelves':
           await warehouseApi.deleteShelf(row.id);
           refetchShelves();
+          break;
+        case 'Abhi':
+          // TODO: Add API call for Abhi
+          toast({
+            title: "Info",
+            description: "Abhi delete functionality coming soon!",
+            variant: "default",
+          });
           break;
         case 'Bins':
           await warehouseApi.deleteBin(row.id);
@@ -113,6 +123,9 @@ export default function Infrastructure() {
       case 'Shelves':
         navigate(`/infrastructure/create-shelf?edit=${row.id}`);
         break;
+      case 'Abhi':
+        navigate(`/infrastructure/create-abhi?edit=${row.id}`);
+        break;
       case 'Bins':
         navigate(`/infrastructure/create-bin?edit=${row.id}`);
         break;
@@ -133,6 +146,9 @@ export default function Infrastructure() {
         break;
       case 'Shelves':
         refetchShelves();
+        break;
+      case 'Abhi':
+        // TODO: Add refetch for Abhi
         break;
       case 'Bins':
         refetchBins();
@@ -176,6 +192,9 @@ export default function Infrastructure() {
           item.rackCode?.toLowerCase().includes(term) ||
           item.description?.toLowerCase().includes(term)
         );
+      case 'Abhi':
+        // TODO: Add search logic for Abhi
+        return data;
       case 'Bins':
         return data.filter((item: BinResponse) => 
           item.binCode?.toLowerCase().includes(term) ||
@@ -200,6 +219,9 @@ export default function Infrastructure() {
         return searchData(racks, search, "Racks");
       case "Shelves":
         return searchData(shelves, search, "Shelves");
+      case "Abhi":
+        // TODO: Add data for Abhi tab
+        return [];
       case "Bins":
         return searchData(bins, search, "Bins");
       default:
@@ -218,6 +240,9 @@ export default function Infrastructure() {
         return racksColumns;
       case "Shelves":
         return shelvesColumns;
+      case "Abhi":
+        // TODO: Add columns for Abhi tab
+        return [];
       case "Bins":
         return binsColumns;
       default:
@@ -261,7 +286,7 @@ export default function Infrastructure() {
 
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-border mt-4 mb-6">
-        {["Warehouses", "Zones", "Racks", "Shelves", "Bins"].map((tab) => (
+        {["Warehouses", "Zones", "Racks", "Shelves", "Abhi", "Bins"].map((tab) => (
           <button
             key={tab}
             onClick={() => { setActiveTab(tab); setSearch(""); }}
