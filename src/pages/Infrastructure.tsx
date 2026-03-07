@@ -1,23 +1,48 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Plus, Filter, Download, Search, Pencil, Trash2 } from "lucide-react";
-import { useWarehouses, useZones, useRacks, useShelves, useBins } from "@/hooks/useWarehouseData";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Plus, Search, Pencil, Trash2 } from "lucide-react";
+import { useWarehouses, useFloors, useZones, useRacks, useShelves, useBins } from "@/hooks/useWarehouseData";
 import { warehouseApi } from "@/services/warehouseApi";
 import DataTable, { TableAction } from "@/components/shared/DataTable";
+import AdvancedFilters from "@/components/shared/AdvancedFilters";
+import ExportDropdown from "@/components/shared/ExportDropdown";
 import { useToast } from "@/hooks/use-toast";
 
 import { 
-  warehousesColumns, 
+  warehousesColumns,
+  floorsColumns,
   zonesColumns, 
   racksColumns, 
   shelvesColumns, 
+  abhiColumns,
   binsColumns 
 } from "@/data/tableConfigs";
-import type { WareHouseResponse, ZoneResponse, RackResponse, ShelfResponse, BinResponse } from "@/types/api";
+
+import {
+  warehouseFilters,
+  floorFilters,
+  zoneFilters,
+  rackFilters,
+  shelfFilters,
+  binFilters
+} from "@/data/filterConfigs";
+
+import {
+  exportToExcel,
+  exportToCSV,
+  warehouseExportColumns,
+  floorExportColumns,
+  zoneExportColumns,
+  rackExportColumns,
+  shelfExportColumns,
+  binExportColumns
+} from "@/utils/exportUtils";
+
+import type { WareHouseResponse, FloorResponse, ZoneResponse, RackResponse, ShelfResponse, BinResponse } from "@/types/api";
 
 import { Eye, Layers, CheckCircle } from "lucide-react";
 
-const tabs = ["Warehouses", "Zones", "Racks", "Shelves", "Abhi", "Bins"];
+const tabs = ["Warehouses", "Floors", "Zones", "Racks", "Shelves", "Bins"];
 
 const features = [
   { icon: Eye, color: "stat-icon-blue", title: "Hierarchical View", desc: "Easily map your warehouse from global location down to individual picking bins." },
@@ -26,31 +51,49 @@ const features = [
 ];
 
 export default function Infrastructure() {
-  const [activeTab, setActiveTab] = useState("Warehouses");
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || "Warehouses");
   const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState<Record<string, any>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Update active tab when URL parameter changes
+  useEffect(() => {
+    if (tabFromUrl && tabs.includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
+
+  // Clear filters when tab changes
+  useEffect(() => {
+    setFilters({});
+    setSearch("");
+  }, [activeTab]);
+
   // Fetch data from API
   const { warehouses, loading: whLoading, error: whError, refetch: refetchWarehouses } = useWarehouses();
+  const { floors, loading: floorLoading, error: floorError, refetch: refetchFloors } = useFloors();
   const { zones, loading: zoneLoading, error: zoneError, refetch: refetchZones } = useZones();
   const { racks, loading: rackLoading, error: rackError, refetch: refetchRacks } = useRacks();
   const { shelves, loading: shelfLoading, error: shelfError, refetch: refetchShelves } = useShelves();
   const { bins, loading: binLoading, error: binError, refetch: refetchBins } = useBins();
 
-  const loading = whLoading || zoneLoading || rackLoading || shelfLoading || binLoading;
-  const error = whError || zoneError || rackError || shelfError || binError;
+  const loading = whLoading || floorLoading || zoneLoading || rackLoading || shelfLoading || binLoading;
+  const error = whError || floorError || zoneError || rackError || shelfError || binError;
 
   const createLabel = activeTab === "Warehouses" ? "Create Warehouse" :
+    activeTab === "Floors" ? "Create Floor" :
     activeTab === "Zones" ? "Create Zone" :
     activeTab === "Racks" ? "Create Rack" :
-    activeTab === "Abhi" ? "Create Abhi" : `Create ${activeTab.slice(0, -1)}`;
+    `Create ${activeTab.slice(0, -1)}`;
 
   const createLink = activeTab === "Warehouses" ? "/infrastructure/create-warehouse" :
+    activeTab === "Floors" ? "/infrastructure/create-floor" :
     activeTab === "Zones" ? "/infrastructure/create-zone" :
     activeTab === "Racks" ? "/infrastructure/create-rack" :
     activeTab === "Shelves" ? "/infrastructure/create-shelf" :
-    activeTab === "Abhi" ? "/infrastructure/create-abhi" :
     activeTab === "Bins" ? "/infrastructure/create-bin" : "#";
 
   const handleCreateClick = () => {
@@ -69,6 +112,10 @@ export default function Infrastructure() {
           await warehouseApi.deleteWarehouse(row.id);
           refetchWarehouses();
           break;
+        case 'Floors':
+          await warehouseApi.deleteFloor(row.id);
+          refetchFloors();
+          break;
         case 'Zones':
           await warehouseApi.deleteZone(row.id);
           refetchZones();
@@ -80,14 +127,6 @@ export default function Infrastructure() {
         case 'Shelves':
           await warehouseApi.deleteShelf(row.id);
           refetchShelves();
-          break;
-        case 'Abhi':
-          // TODO: Add API call for Abhi
-          toast({
-            title: "Info",
-            description: "Abhi delete functionality coming soon!",
-            variant: "default",
-          });
           break;
         case 'Bins':
           await warehouseApi.deleteBin(row.id);
@@ -114,6 +153,9 @@ export default function Infrastructure() {
       case 'Warehouses':
         navigate(`/infrastructure/create-warehouse?edit=${row.id}`);
         break;
+      case 'Floors':
+        navigate(`/infrastructure/create-floor?edit=${row.id}`);
+        break;
       case 'Zones':
         navigate(`/infrastructure/create-zone?edit=${row.id}`);
         break;
@@ -122,9 +164,6 @@ export default function Infrastructure() {
         break;
       case 'Shelves':
         navigate(`/infrastructure/create-shelf?edit=${row.id}`);
-        break;
-      case 'Abhi':
-        navigate(`/infrastructure/create-abhi?edit=${row.id}`);
         break;
       case 'Bins':
         navigate(`/infrastructure/create-bin?edit=${row.id}`);
@@ -138,6 +177,9 @@ export default function Infrastructure() {
       case 'Warehouses':
         refetchWarehouses();
         break;
+      case 'Floors':
+        refetchFloors();
+        break;
       case 'Zones':
         refetchZones();
         break;
@@ -147,83 +189,117 @@ export default function Infrastructure() {
       case 'Shelves':
         refetchShelves();
         break;
-      case 'Abhi':
-        // TODO: Add refetch for Abhi
-        break;
       case 'Bins':
         refetchBins();
         break;
     }
   };
 
-  // Search function for API data
-  const searchData = (data: any[], searchTerm: string, type: string) => {
-    if (!searchTerm) return data;
+  // Enhanced search and filter function
+  const searchAndFilterData = (data: any[], searchTerm: string, activeFilters: Record<string, any>, type: string) => {
+    let filteredData = [...data];
     
-    const term = searchTerm.toLowerCase();
-    
-    switch (type) {
-      case 'Warehouses':
-        return data.filter((item: WareHouseResponse) => 
-          item.name?.toLowerCase().includes(term) ||
-          item.code?.toLowerCase().includes(term) ||
-          item.address?.toLowerCase().includes(term) ||
-          item.warehouseType?.toLowerCase().includes(term)
-        );
-      case 'Zones':
-        return data.filter((item: ZoneResponse) => 
-          item.name?.toLowerCase().includes(term) ||
-          item.warehouseName?.toLowerCase().includes(term) ||
-          item.zoneType?.toLowerCase().includes(term) ||
-          item.floorName?.toLowerCase().includes(term) ||
-          item.description?.toLowerCase().includes(term)
-        );
-      case 'Racks':
-        return data.filter((item: RackResponse) => 
-          item.rackCode?.toLowerCase().includes(term) ||
-          item.zoneName?.toLowerCase().includes(term) ||
-          item.rackType?.toLowerCase().includes(term) ||
-          item.aisle?.toLowerCase().includes(term) ||
-          item.description?.toLowerCase().includes(term)
-        );
-      case 'Shelves':
-        return data.filter((item: ShelfResponse) => 
-          item.shelfCode?.toLowerCase().includes(term) ||
-          item.rackCode?.toLowerCase().includes(term) ||
-          item.description?.toLowerCase().includes(term)
-        );
-      case 'Abhi':
-        // TODO: Add search logic for Abhi
-        return data;
-      case 'Bins':
-        return data.filter((item: BinResponse) => 
-          item.binCode?.toLowerCase().includes(term) ||
-          item.shelfCode?.toLowerCase().includes(term) ||
-          item.warehouseName?.toLowerCase().includes(term) ||
-          item.binType?.toLowerCase().includes(term) ||
-          item.description?.toLowerCase().includes(term)
-        );
-      default:
-        return data;
+    // Apply search filter
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      
+      switch (type) {
+        case 'Warehouses':
+          filteredData = filteredData.filter((item: WareHouseResponse) => 
+            item.name?.toLowerCase().includes(term) ||
+            item.code?.toLowerCase().includes(term) ||
+            item.address?.toLowerCase().includes(term) ||
+            item.warehouseType?.toLowerCase().includes(term)
+          );
+          break;
+        case 'Floors':
+          filteredData = filteredData.filter((item: FloorResponse) => 
+            item.name?.toLowerCase().includes(term) ||
+            item.code?.toLowerCase().includes(term) ||
+            item.warehouseName?.toLowerCase().includes(term) ||
+            item.accessType?.toLowerCase().includes(term) ||
+            item.description?.toLowerCase().includes(term)
+          );
+          break;
+        case 'Zones':
+          filteredData = filteredData.filter((item: ZoneResponse) => 
+            item.name?.toLowerCase().includes(term) ||
+            item.warehouseName?.toLowerCase().includes(term) ||
+            item.zoneType?.toLowerCase().includes(term) ||
+            item.floorName?.toLowerCase().includes(term) ||
+            item.description?.toLowerCase().includes(term)
+          );
+          break;
+        case 'Racks':
+          filteredData = filteredData.filter((item: RackResponse) => 
+            item.rackCode?.toLowerCase().includes(term) ||
+            item.zoneName?.toLowerCase().includes(term) ||
+            item.rackType?.toLowerCase().includes(term) ||
+            item.aisle?.toLowerCase().includes(term) ||
+            item.description?.toLowerCase().includes(term)
+          );
+          break;
+        case 'Shelves':
+          filteredData = filteredData.filter((item: ShelfResponse) => 
+            item.shelfCode?.toLowerCase().includes(term) ||
+            item.rackCode?.toLowerCase().includes(term) ||
+            item.description?.toLowerCase().includes(term)
+          );
+          break;
+        case 'Bins':
+          filteredData = filteredData.filter((item: BinResponse) => 
+            item.binCode?.toLowerCase().includes(term) ||
+            item.shelfCode?.toLowerCase().includes(term) ||
+            item.warehouseName?.toLowerCase().includes(term) ||
+            item.binType?.toLowerCase().includes(term) ||
+            item.description?.toLowerCase().includes(term)
+          );
+          break;
+      }
     }
+
+    // Apply advanced filters
+    Object.entries(activeFilters).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        filteredData = filteredData.filter(item => {
+          const itemValue = item[key];
+          
+          // Handle boolean filters
+          if (typeof value === 'boolean') {
+            return itemValue === value;
+          }
+          
+          // Handle string filters (case insensitive)
+          if (typeof value === 'string') {
+            if (typeof itemValue === 'string') {
+              return itemValue.toLowerCase().includes(value.toLowerCase());
+            }
+            return itemValue === value;
+          }
+          
+          return itemValue === value;
+        });
+      }
+    });
+
+    return filteredData;
   };
 
-  // Get filtered data based on active tab and search
+  // Get filtered data based on active tab, search, and filters
   const getFilteredData = () => {
     switch (activeTab) {
       case "Warehouses":
-        return searchData(warehouses, search, "Warehouses");
+        return searchAndFilterData(warehouses, search, filters, "Warehouses");
+      case "Floors":
+        return searchAndFilterData(floors, search, filters, "Floors");
       case "Zones":
-        return searchData(zones, search, "Zones");
+        return searchAndFilterData(zones, search, filters, "Zones");
       case "Racks":
-        return searchData(racks, search, "Racks");
+        return searchAndFilterData(racks, search, filters, "Racks");
       case "Shelves":
-        return searchData(shelves, search, "Shelves");
-      case "Abhi":
-        // TODO: Add data for Abhi tab
-        return [];
+        return searchAndFilterData(shelves, search, filters, "Shelves");
       case "Bins":
-        return searchData(bins, search, "Bins");
+        return searchAndFilterData(bins, search, filters, "Bins");
       default:
         return [];
     }
@@ -234,20 +310,128 @@ export default function Infrastructure() {
     switch (activeTab) {
       case "Warehouses":
         return warehousesColumns;
+      case "Floors":
+        return floorsColumns;
       case "Zones":
         return zonesColumns;
       case "Racks":
         return racksColumns;
       case "Shelves":
         return shelvesColumns;
-      case "Abhi":
-        // TODO: Add columns for Abhi tab
-        return [];
       case "Bins":
         return binsColumns;
       default:
         return [];
     }
+  };
+
+  // Get filter configuration based on active tab
+  const getFilterConfig = () => {
+    switch (activeTab) {
+      case "Warehouses":
+        return warehouseFilters;
+      case "Floors":
+        return floorFilters;
+      case "Zones":
+        return zoneFilters;
+      case "Racks":
+        return rackFilters;
+      case "Shelves":
+        return shelfFilters;
+      case "Bins":
+        return binFilters;
+      default:
+        return [];
+    }
+  };
+
+  // Export functions
+  const handleExportExcel = () => {
+    const data = getFilteredData();
+    const timestamp = new Date().toISOString().split('T')[0];
+    
+    let exportColumns, filename;
+    
+    switch (activeTab) {
+      case "Warehouses":
+        exportColumns = warehouseExportColumns;
+        filename = `warehouses_${timestamp}`;
+        break;
+      case "Floors":
+        exportColumns = floorExportColumns;
+        filename = `floors_${timestamp}`;
+        break;
+      case "Zones":
+        exportColumns = zoneExportColumns;
+        filename = `zones_${timestamp}`;
+        break;
+      case "Racks":
+        exportColumns = rackExportColumns;
+        filename = `racks_${timestamp}`;
+        break;
+      case "Shelves":
+        exportColumns = shelfExportColumns;
+        filename = `shelves_${timestamp}`;
+        break;
+      case "Bins":
+        exportColumns = binExportColumns;
+        filename = `bins_${timestamp}`;
+        break;
+      default:
+        return;
+    }
+
+    exportToExcel(data, exportColumns, filename, activeTab);
+    
+    toast({
+      title: "Export Successful",
+      description: `${data.length} ${activeTab.toLowerCase()} exported to Excel`,
+      variant: "default",
+    });
+  };
+
+  const handleExportCSV = () => {
+    const data = getFilteredData();
+    const timestamp = new Date().toISOString().split('T')[0];
+    
+    let exportColumns, filename;
+    
+    switch (activeTab) {
+      case "Warehouses":
+        exportColumns = warehouseExportColumns;
+        filename = `warehouses_${timestamp}`;
+        break;
+      case "Floors":
+        exportColumns = floorExportColumns;
+        filename = `floors_${timestamp}`;
+        break;
+      case "Zones":
+        exportColumns = zoneExportColumns;
+        filename = `zones_${timestamp}`;
+        break;
+      case "Racks":
+        exportColumns = rackExportColumns;
+        filename = `racks_${timestamp}`;
+        break;
+      case "Shelves":
+        exportColumns = shelfExportColumns;
+        filename = `shelves_${timestamp}`;
+        break;
+      case "Bins":
+        exportColumns = binExportColumns;
+        filename = `bins_${timestamp}`;
+        break;
+      default:
+        return;
+    }
+
+    exportToCSV(data, exportColumns, filename);
+    
+    toast({
+      title: "Export Successful",
+      description: `${data.length} ${activeTab.toLowerCase()} exported to CSV`,
+      variant: "default",
+    });
   };
 
   // Define table actions
@@ -286,20 +470,16 @@ export default function Infrastructure() {
 
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-border mt-4 mb-6">
-        {["Warehouses", "Zones", "Racks", "Shelves", "Abhi", "Bins"].map((tab) => (
+        {["Warehouses", "Floors", "Zones", "Racks", "Shelves", "Bins"].map((tab) => (
           <button
             key={tab}
-            onClick={() => { setActiveTab(tab); setSearch(""); }}
+            onClick={() => { setActiveTab(tab); }}
             className={`tab-item ${activeTab === tab ? "active" : ""}`}
           >
             {tab}
           </button>
         ))}
       </div>
-
-
-
-
 
       {/* Search + Filters */}
       {!loading && (
@@ -316,12 +496,18 @@ export default function Infrastructure() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <button className="btn-outline flex items-center gap-1.5 text-xs">
-                <Filter className="w-3.5 h-3.5" /> Filters
-              </button>
-              <button className="btn-outline flex items-center gap-1.5 text-xs">
-                <Download className="w-3.5 h-3.5" /> Export
-              </button>
+              <AdvancedFilters
+                filters={getFilterConfig()}
+                activeFilters={filters}
+                onFiltersChange={setFilters}
+                onClearFilters={() => setFilters({})}
+              />
+              <ExportDropdown
+                onExportExcel={handleExportExcel}
+                onExportCSV={handleExportCSV}
+                recordCount={filteredData.length}
+                entityName={activeTab}
+              />
             </div>
           </div>
         </div>

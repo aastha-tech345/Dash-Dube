@@ -29,6 +29,38 @@ export const warehousesColumns: TableColumn[] = [
   }
 ];
 
+// Floors Table Configuration
+export const floorsColumns: TableColumn[] = [
+  {
+    key: 'code',
+    label: 'Floor Code',
+  },
+  {
+    key: 'name',
+    label: 'Name',
+  },
+  {
+    key: 'warehouseName',
+    label: 'Warehouse',
+    render: (value) => <span className="text-muted-foreground">{value}</span>
+  },
+  {
+    key: 'levelNo',
+    label: 'Level',
+    render: (value) => <span className="text-xs">Level {value}</span>
+  },
+  {
+    key: 'accessType',
+    label: 'Access',
+    render: (value) => <span className="text-xs text-muted-foreground">{value}</span>
+  },
+  {
+    key: 'isActive',
+    label: 'Status',
+    render: (value) => <StatusBadge status={value ? 'Active' : 'Inactive'} />
+  }
+];
+
 // Zones Table Configuration
 export const zonesColumns: TableColumn[] = [
   {
@@ -92,6 +124,39 @@ export const racksColumns: TableColumn[] = [
 
 // Shelves Table Configuration
 export const shelvesColumns: TableColumn[] = [
+  {
+    key: 'shelfCode',
+    label: 'Shelf Code',
+  },
+  {
+    key: 'rackCode',
+    label: 'Rack Code',
+    render: (value) => <span className="text-muted-foreground">{value}</span>
+  },
+  {
+    key: 'levelNo',
+    label: 'Level Number',
+  },
+  {
+    key: 'pickSequence',
+    label: 'Pick Sequence',
+  },
+  {
+    key: 'maxWeight',
+    label: 'Max Weight',
+    render: (value) => value ? `${value} kg` : '-'
+  },
+  {
+    key: 'isActive',
+    label: 'Status',
+    render: (value) => <StatusBadge status={value ? 'Active' : 'Inactive'} />
+  }
+];
+
+
+
+
+export const abhiColumns: TableColumn[] = [
   {
     key: 'shelfCode',
     label: 'Shelf Code',

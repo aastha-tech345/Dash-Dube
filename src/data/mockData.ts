@@ -51,11 +51,11 @@ export const warehouses = [
 ];
 
 export const zones = [
-  { name: "FAST-PICK-A", warehouse: "WH-MAIN-01", type: "PICKING", pickPriority: 1, putAwayPriority: 5, status: "Active" },
+  { name: "FAST-PICK-A", warehouse: "WH-MAIN-01", type: "STORAGE", pickPriority: 1, putAwayPriority: 5, status: "Active" },
   { name: "BULK-STORAGE-01", warehouse: "WH-MAIN-01", type: "STORAGE", pickPriority: 10, putAwayPriority: 1, status: "Active" },
-  { name: "COLD-VAL-A", warehouse: "WH-COLD-02", type: "REFRIGERATED", pickPriority: 2, putAwayPriority: 2, status: "Active" },
-  { name: "QA-HOLD-01", warehouse: "WH-RTRN-04", type: "QUALITY_CONTROL", pickPriority: 99, putAwayPriority: 3, status: "Inactive" },
-  { name: "SHIP-STAGE-E", warehouse: "WH-EAST-05", type: "STAGING", pickPriority: 1, putAwayPriority: 20, status: "Active" },
+  { name: "COLD-VAL-A", warehouse: "WH-COLD-02", type: "STORAGE", pickPriority: 2, putAwayPriority: 2, status: "Active" },
+  { name: "QA-HOLD-01", warehouse: "WH-RTRN-04", type: "QC", pickPriority: 99, putAwayPriority: 3, status: "Inactive" },
+  { name: "SHIP-STAGE-E", warehouse: "WH-EAST-05", type: "DISPATCH", pickPriority: 1, putAwayPriority: 20, status: "Active" },
 ];
 
 export const racks = [

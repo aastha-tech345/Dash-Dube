@@ -271,7 +271,7 @@ export interface ZoneRequest {
   warehouseId: number;
   floorId: number;
   name: string;
-  zoneType: 'STORAGE' | 'PICKING' | 'PACKING' | 'SHIPPING' | 'RECEIVING';
+  zoneType: 'STORAGE' | 'RECEIVING' | 'QC' | 'QUARANTINE' | 'DISPATCH' | 'RETURNS' | 'PRODUCTION_STAGING';
   pickPriority: number;
   putAwayPriority: number;
   fastMovingZone: boolean;
@@ -315,7 +315,7 @@ export interface RackRequest {
   zoneId: number;
   rackCode: string;
   barcodeTag?: string;
-  rackType: 'STORAGE' | 'PALLET' | 'CANTILEVER' | 'MEZZANINE' | 'MOBILE';
+  rackType: 'STORAGE' | 'BULK_STORAGE' | 'PICK_FACE' | 'STAGING';
   aisle?: string;
   pickSequence: number;
   maxWeight?: number;

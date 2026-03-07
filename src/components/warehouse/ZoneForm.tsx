@@ -20,7 +20,10 @@ export default function ZoneForm({ onSuccess, onCancel }: ZoneFormProps) {
     putAwayPriority: 1,
     fastMovingZone: false,
     temperatureControlled: false,
+    minTemp: null,
+    maxTemp: null,
     hazardous: false,
+    hazardClass: null,
     restrictedAccess: false,
     isActive: true,
     maxWeight: 0,
@@ -61,7 +64,15 @@ export default function ZoneForm({ onSuccess, onCancel }: ZoneFormProps) {
     setLoading(true);
 
     try {
-      await warehouseApi.createZone(formData);
+      // Prepare data - ensure null values for optional fields when not used
+      const submitData: ZoneRequest = {
+        ...formData,
+        minTemp: formData.temperatureControlled ? formData.minTemp : null,
+        maxTemp: formData.temperatureControlled ? formData.maxTemp : null,
+        hazardClass: formData.hazardous ? formData.hazardClass : null,
+      };
+
+      await warehouseApi.createZone(submitData);
       onSuccess?.();
     } catch (error) {
       console.error('Failed to create zone:', error);
@@ -130,10 +141,12 @@ export default function ZoneForm({ onSuccess, onCancel }: ZoneFormProps) {
             onChange={(e) => setFormData({ ...formData, zoneType: e.target.value as any })}
           >
             <option value="STORAGE">Storage</option>
-            <option value="PICKING">Picking</option>
-            <option value="PACKING">Packing</option>
-            <option value="SHIPPING">Shipping</option>
             <option value="RECEIVING">Receiving</option>
+            <option value="QC">QC (Quality Control)</option>
+            <option value="QUARANTINE">Quarantine</option>
+            <option value="DISPATCH">Dispatch</option>
+            <option value="RETURNS">Returns</option>
+            <option value="PRODUCTION_STAGING">Production Staging</option>
           </select>
         </div>
       </div>

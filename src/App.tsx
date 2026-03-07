@@ -13,14 +13,16 @@ import Index from "./pages/Index";
 import Inventory from "./pages/Inventory";
 import AddProduct from "./pages/AddProduct";
 import Infrastructure from "./pages/Infrastructure";
-import CreateWarehouse from "./pages/CreateWarehouse";
-import CreateZone from "./pages/CreateZone";
-import CreateRack from "./pages/CreateRack";
-import CreateShelf from "./pages/CreateShelf";
-import CreateBin from "./pages/CreateBin";
+import CreateWarehouse from "./pages/warehouse/CreateWarehouse";
+import CreateFloor from "./pages/floor/CreateFloor";
+import CreateZone from "./pages/zone/CreateZone";
+import CreateRack from "./pages/rack/CreateRack";
+import CreateShelf from "./pages/shelf/CreateShelf";
+import CreateBin from "./pages/bin/CreateBin";
 import StockIn from "./pages/StockIn";
 import StockOut from "./pages/StockOut";
 import NotFound from "./pages/NotFound";
+import CreateAbhi from "./pages/shelf/CreateAbhi";
 
 const queryClient = new QueryClient();
 
@@ -48,9 +50,11 @@ const AppRoutes = () => {
                 <Route path="/inventory/add" element={<AddProduct />} />
                 <Route path="/infrastructure" element={<Infrastructure />} />
                 <Route path="/infrastructure/create-warehouse" element={<CreateWarehouse />} />
+                <Route path="/infrastructure/create-floor" element={<CreateFloor />} />
                 <Route path="/infrastructure/create-zone" element={<CreateZone />} />
                 <Route path="/infrastructure/create-rack" element={<CreateRack />} />
                 <Route path="/infrastructure/create-shelf" element={<CreateShelf />} />
+                <Route path="/infrastructure/create-abhi" element={<CreateAbhi />} />
                 <Route path="/infrastructure/create-bin" element={<CreateBin />} />
                 <Route path="/stock-in" element={<StockIn />} />
                 <Route path="/stock-out" element={<StockOut />} />

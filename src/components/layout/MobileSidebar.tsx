@@ -1,6 +1,15 @@
 import { useLocation, Link } from "react-router-dom";
-import { LayoutDashboard, Package, Grid3X3, CheckSquare, ArrowUpRight, Settings, LogOut, X } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import {
+  LayoutDashboard,
+  Package,
+  Grid3X3,
+  CheckSquare,
+  ArrowUpRight,
+  Settings,
+  LogOut,
+  X,
+  ArrowLeft,
+} from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -17,16 +26,9 @@ interface Props {
 
 export default function MobileSidebar({ open, onClose }: Props) {
   const location = useLocation();
-  const { logout } = useAuth();
-  
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
-  };
-
-  const handleLogout = () => {
-    logout();
-    onClose();
   };
 
   if (!open) return null;
@@ -36,28 +38,93 @@ export default function MobileSidebar({ open, onClose }: Props) {
       <div className="fixed inset-0 bg-foreground/20 z-40" onClick={onClose} />
       <aside className="fixed left-0 top-0 bottom-0 w-[220px] bg-card border-r border-border z-50 flex flex-col">
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3" onClick={onClose}>
+          <Link to="/" className="flex items-center gap-3">
+            {/* <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <ArrowLeft className="w-4 h-4 text-primary-foreground" />
+            </div> */}
             <div>
-              <div className="text-sm font-semibold text-foreground">Ware House</div>
-              <div className="text-xs text-muted-foreground">Warehouse Management</div>
+              {/* Icon Circle */}
+              <div
+                onClick={onClose}
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, #0d6efd, #20c997)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontWeight: "600",
+                  fontSize: "17px",
+                  padding: "13px",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                }}
+              >
+                WH
+              </div>
+
+              {/* Brand Text */}
+              <div style={{ lineHeight: "1" }}>
+                <div
+                  style={{
+                    fontSize: "22px",
+                    fontWeight: "800",
+                    letterSpacing: "1px",
+                    color: "#0d6efd",
+                  }}
+                >
+                  Ware
+                  <span style={{ color: "#20c997", marginLeft: "4px" }}>
+                    House
+                  </span>
+                </div>
+
+                {/* <div
+      style={{
+        fontSize: "11px",
+        letterSpacing: "2px",
+        color: "#6c757d",
+        marginTop: "2px",
+      }}
+    >
+      MANAGEMENT
+    </div> */}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Back to Dashboard
+              </div>
             </div>
           </Link>
-          <button onClick={onClose}><X className="w-4 h-4 text-muted-foreground" /></button>
+          {/* <button onClick={onClose}><X className="w-4 h-4 text-muted-foreground" /></button> */}
         </div>
         <div className="px-4 pt-5 pb-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Warehouse Management</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Warehouse Management
+          </span>
         </div>
         <nav className="flex-1 px-2">
           {navItems.map((item) => (
-            <Link key={item.path} to={item.path} onClick={onClose} className={`sidebar-link ${isActive(item.path) ? "active" : ""}`}>
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={onClose}
+              className={`sidebar-link ${isActive(item.path) ? "active" : ""}`}
+            >
               <item.icon className="w-4 h-4" />
               <span>{item.label}</span>
             </Link>
           ))}
         </nav>
         <div className="px-2 pb-4 mt-auto border-t border-border pt-2">
-          <button className="sidebar-link w-full"><Settings className="w-4 h-4" /><span>Settings</span></button>
-          <button className="sidebar-link w-full text-red-500" onClick={handleLogout}><LogOut className="w-4 h-4" /><span>Logout</span></button>
+          <button className="sidebar-link w-full">
+            <Settings className="w-4 h-4" />
+            <span>Settings</span>
+          </button>
+          <button className="sidebar-link w-full text-red-500">
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
+          </button>
         </div>
       </aside>
     </>
