@@ -1,22 +1,38 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Package, TrendingUp, AlertTriangle } from "lucide-react";
-import { inventoryProducts as initialProducts, inventorySummary } from "@/data/mockData";
-import StatusBadge from "@/components/shared/StatusBadge";
-import Pagination from "@/components/shared/Pagination";
+import { Plus, TrendingUp, AlertTriangle } from "lucide-react";
+import { inventorySummary } from "@/data/mockData";
+import { useWarehouseProducts } from "@/hooks/useWarehouseProducts";
+import ProductFilters from "@/components/inventory/ProductFilters";
+import ProductTable from "@/components/inventory/ProductTable";
 
 export default function Inventory() {
-  const [products, setProducts] = useState(initialProducts);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-
-  const filtered = products.filter((p) => {
-    const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.id.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = !categoryFilter || p.category === categoryFilter;
+  
+  const { products: apiProducts, loading, error } = useWarehouseProducts();
+  
+  // Filter products based on search and category
+  const filteredProducts = apiProducts.filter((p) => {
+    const matchesSearch = !search || 
+      p.name.toLowerCase().includes(search.toLowerCase()) || 
+      p.sku.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = !categoryFilter || p.categoryName === categoryFilter;
     return matchesSearch && matchesCategory;
   });
-
-  const categories = [...new Set(initialProducts.map((p) => p.category))];
+  
+  // Convert API products to display format
+  const products = filteredProducts.map(p => ({
+    id: p.sku,
+    name: p.name,
+    sub: p.categoryName,
+    category: p.categoryName,
+    purchasePrice: `$${p.purchasePrice.toFixed(2)}`,
+    salePrice: `$${p.salePrice.toFixed(2)}`,
+    status: p.isActive ? 'Active' : 'Inactive' as 'Active' | 'Inactive'
+  }));
+  
+  const categories = [...new Set(apiProducts.map((p) => p.categoryName))];
 
   return (
     <div>
@@ -30,88 +46,28 @@ export default function Inventory() {
         </Link>
       </div>
 
-      {/* Filters */}
-      <div className="section-card mb-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[200px] max-w-xs">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search products, SKU..."
-              className="input-field pl-9"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
-              className={`btn-outline text-xs ${categoryFilter === cat ? "ring-2 ring-primary/30" : ""}`}
-            >
-              {cat}
-            </button>
-          ))}
-          {categoryFilter && (
-            <button onClick={() => setCategoryFilter(null)} className="text-xs text-muted-foreground hover:text-foreground">
-              Clear
-            </button>
-          )}
+      {error && (
+        <div className="section-card mb-6 p-4 bg-red-50 border-red-200">
+          <p className="text-red-600 text-sm">Error: {error}</p>
         </div>
-      </div>
+      )}
 
-      {/* Table */}
-      <div className="section-card mb-6 overflow-x-auto">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>SKU</th>
-              <th>Product Name</th>
-              <th>Category</th>
-              <th>Purchase Price</th>
-              <th>Sale Price</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((p) => (
-              <tr key={p.id}>
-                <td className="text-muted-foreground text-xs">{p.id}</td>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded bg-muted flex items-center justify-center"><Package className="w-4 h-4 text-muted-foreground" /></div>
-                    <div>
-                      <div className="font-medium text-sm">{p.name}</div>
-                      <div className="text-xs text-muted-foreground">{p.sub}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span className={`text-xs font-medium ${
-                    p.category === "Electronics" ? "category-electronics" :
-                    p.category === "Furniture" ? "category-furniture" : "category-appliances"
-                  }`}>{p.category}</span>
-                </td>
-                <td>{p.purchasePrice}</td>
-                <td className="font-medium">{p.salePrice}</td>
-                <td>
-                  <button
-                    onClick={() => setProducts(products.map((item) => item.id === p.id ? { ...item, status: item.status === "Active" ? "Inactive" : "Active" } : item))}
-                    className={`flex items-center gap-1 text-xs font-medium cursor-pointer ${p.status === "Active" ? "text-emerald-500" : "text-muted-foreground"}`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${p.status === "Active" ? "bg-emerald-500" : "bg-muted-foreground"}`} />
-                    {p.status}
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
-              <tr><td colSpan={6} className="text-center text-muted-foreground py-8">No products found.</td></tr>
-            )}
-          </tbody>
-        </table>
-        {filtered.length > 0 && <Pagination current={1} total={1} showingText={`Showing ${filtered.length} of ${products.length} products`} />}
-      </div>
+      <ProductFilters
+        search={search}
+        onSearchChange={setSearch}
+        categories={categories}
+        selectedCategory={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+      />
+
+      <ProductTable
+        products={products}
+        loading={loading}
+        onStatusToggle={(id, status) => {
+          console.log('Toggle status:', id, status);
+          // Implement status toggle with API
+        }}
+      />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

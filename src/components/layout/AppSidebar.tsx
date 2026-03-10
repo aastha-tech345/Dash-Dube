@@ -1,6 +1,14 @@
 import { useLocation, Link } from "react-router-dom";
-import { LayoutDashboard, Package, Grid3X3, CheckSquare, ArrowUpRight, Settings, LogOut } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import {
+  LayoutDashboard,
+  Package,
+  Grid3X3,
+  CheckSquare,
+  ArrowUpRight,
+  Settings,
+  LogOut,
+  ArrowLeft,
+} from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -12,24 +20,67 @@ const navItems = [
 
 export default function AppSidebar() {
   const location = useLocation();
-  const { logout } = useAuth();
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
   };
 
-  const handleLogout = () => {
-    logout();
-  };
-
   return (
     <aside className="w-[220px] h-screen border-r border-border bg-card flex flex-col flex-shrink-0 max-lg:hidden overflow-hidden">
       <div className="p-4 border-b border-border">
         <Link to="/" className="flex items-center gap-3">
+          <div
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #1a237e, #1a237e)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              fontWeight: "900",
+              fontSize: "17px",
+              padding: "13px",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+            }}
+          >
+            WH
+          </div>
           <div>
-            <div className="text-sm font-semibold text-foreground">Ware House</div>
-            <div className="text-xs text-muted-foreground">Warehouse Management</div>
+            {/* Icon Circle */}
+
+            {/* Brand Text */}
+            <div style={{ lineHeight: "1" }}>
+              <div
+                style={{
+                  fontSize: "22px",
+                  fontWeight: "800",
+                  letterSpacing: "1px",
+                  color: "#1a237e",
+                }}
+              >
+                Ware
+                <span style={{ color: "#1a237e", marginLeft: "4px" }}>
+                  House
+                </span>
+              </div>
+
+              {/* <div
+      style={{
+        fontSize: "11px",
+        letterSpacing: "2px",
+        color: "#6c757d",
+        marginTop: "2px",
+      }}
+    >
+      MANAGEMENT
+    </div> */}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Back to Dashboard
+            </div>
           </div>
         </Link>
       </div>
@@ -58,7 +109,7 @@ export default function AppSidebar() {
           <Settings className="w-4 h-4" />
           <span>Settings</span>
         </button>
-        <button className="sidebar-link w-full text-red-500" onClick={handleLogout}>
+        <button className="sidebar-link w-full text-red-500">
           <LogOut className="w-4 h-4" />
           <span>Logout</span>
         </button>

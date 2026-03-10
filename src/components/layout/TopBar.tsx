@@ -38,7 +38,7 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="w-8 h-8 rounded-full p-0">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold" style={{backgroundColor:"#1a237e"}}>
                 {user?.roles?.[0]?.charAt(0)?.toUpperCase() || 'U'}
               </div>
             </Button>

@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -185,15 +185,17 @@
     @apply flex items-center gap-3 px-4 py-2.5 text-sm rounded-r-lg transition-all relative;
     color: hsl(var(--sidebar-muted));
   }
-  .sidebar-link:hover {
-    background: hsl(var(--sidebar-active-bg));
-  }
-  .sidebar-link.active {
-    background: hsl(var(--sidebar-active-bg));
-    color: hsl(var(--sidebar-active-text));
-    font-weight: 500;
-    border-left: 3px solid hsl(var(--sidebar-active-border));
-  }
+.sidebar-link:hover {
+  background: #ffffff;
+  color: #1a237e;
+}
+
+.sidebar-link.active {
+  background: #1a237e;
+  color: #fff;
+  font-weight: 500;
+  border-left: 3px solid #fff;
+}
 
   .data-table {
     @apply w-full text-sm;
@@ -232,14 +234,15 @@
     @apply text-base font-semibold flex items-center gap-2 mb-4;
   }
 
-  .btn-primary {
-    @apply px-4 py-2 rounded-lg text-sm font-medium transition-colors;
-    background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-  }
-  .btn-primary:hover {
-    background: hsl(263 83% 52%);
-  }
+.btn-primary {
+  @apply px-4 py-2 rounded-lg text-sm font-medium transition-colors;
+  background: #1a237e;
+  color: hsl(var(--primary-foreground));
+}
+
+.btn-primary:hover {
+  background: #1e04a0;
+}
   .btn-outline {
     @apply px-4 py-2 rounded-lg text-sm font-medium border border-border bg-card text-foreground transition-colors;
   }
