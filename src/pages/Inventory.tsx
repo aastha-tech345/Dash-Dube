@@ -3,14 +3,17 @@ import { Link } from "react-router-dom";
 import { Plus, TrendingUp, AlertTriangle } from "lucide-react";
 import { inventorySummary } from "@/data/mockData";
 import { useWarehouseProducts } from "@/hooks/useWarehouseProducts";
+import { warehouseApi } from "@/services/warehouseApi";
+import { useToast } from "@/hooks/use-toast";
 import ProductFilters from "@/components/inventory/ProductFilters";
 import ProductTable from "@/components/inventory/ProductTable";
 
 export default function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const { toast } = useToast();
   
-  const { products: apiProducts, loading, error } = useWarehouseProducts();
+  const { products: apiProducts, loading, error, refetch } = useWarehouseProducts();
   
   // Filter products based on search and category
   const filteredProducts = apiProducts.filter((p) => {
@@ -23,7 +26,8 @@ export default function Inventory() {
   
   // Convert API products to display format
   const products = filteredProducts.map(p => ({
-    id: p.sku,
+    id: p.id.toString(), // Use actual numeric ID
+    sku: p.sku, // Keep SKU separate
     name: p.name,
     sub: p.categoryName,
     category: p.categoryName,
@@ -33,6 +37,28 @@ export default function Inventory() {
   }));
   
   const categories = [...new Set(apiProducts.map((p) => p.categoryName))];
+
+  const handleDelete = async (productId: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) {
+      return;
+    }
+
+    try {
+      await warehouseApi.deleteProduct(Number(productId));
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      });
+      refetch(); // Refresh the product list
+    } catch (err) {
+      console.error('Failed to delete product:', err);
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to delete product",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div>
@@ -67,6 +93,7 @@ export default function Inventory() {
           console.log('Toggle status:', id, status);
           // Implement status toggle with API
         }}
+        onDelete={handleDelete}
       />
 
       {/* Summary Cards */}

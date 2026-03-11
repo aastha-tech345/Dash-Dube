@@ -73,6 +73,8 @@ export default function AddProduct() {
     setLoadingData(true);
     try {
       const product = await warehouseApi.getProductById(id);
+      console.log("Loaded product data:", product);
+      
       setFormData({
         sku: product.sku,
         name: product.name,
@@ -98,8 +100,17 @@ export default function AddProduct() {
         loadSubCategories(product.categoryId);
       }
       
+      // Set image preview if available
       if (product.imageUrl) {
-        setImagePreview(product.imageUrl);
+        console.log("Setting image preview:", product.imageUrl);
+        // Check if imageUrl is relative or absolute
+        const imageUrl = product.imageUrl.startsWith('http') 
+          ? product.imageUrl 
+          : `${import.meta.env.VITE_API_URL || ''}${product.imageUrl}`;
+        setImagePreview(imageUrl);
+      } else {
+        console.log("No imageUrl found in product data");
+        setImagePreview("");
       }
     } catch (error) {
       console.error("Failed to load product:", error);
@@ -235,26 +246,41 @@ export default function AddProduct() {
         {/* Image Upload */}
         <div className="form-section">
           <h3 className="form-section-title">Product Image</h3>
-          <div className="border-2 border-dashed border-border rounded-xl p-10 flex flex-col items-center justify-center text-center relative">
+          <div className="border-2 border-dashed border-border rounded-xl p-10 flex flex-col items-center justify-center text-center relative min-h-[200px]">
             {imagePreview ? (
               <div className="relative">
-                <img src={imagePreview} alt="Preview" className="max-h-48 rounded" />
+                <div className="w-48 h-48 flex items-center justify-center bg-muted rounded-lg overflow-hidden">
+                  <img 
+                    src={imagePreview} 
+                    alt="Product Preview" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.error("Image failed to load:", imagePreview);
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={() => {
                     setImageFile(null);
                     setImagePreview("");
                   }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
                 >
                   ×
                 </button>
+                <p className="text-xs text-muted-foreground mt-2">
+                  <label htmlFor="image-upload" className="text-primary font-medium cursor-pointer hover:underline">
+                    Change image
+                  </label>
+                </p>
               </div>
             ) : (
               <>
                 <Upload className="w-10 h-10 text-muted-foreground mb-3" />
                 <p className="text-sm text-muted-foreground">
-                  <label htmlFor="image-upload" className="text-primary font-medium cursor-pointer">
+                  <label htmlFor="image-upload" className="text-primary font-medium cursor-pointer hover:underline">
                     Click to upload
                   </label> or drag and drop
                 </p>
@@ -269,6 +295,12 @@ export default function AddProduct() {
               className="hidden"
             />
           </div>
+          {/* Debug info - remove after testing */}
+          {editId && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Debug: Image URL = {imagePreview || "No image URL"}
+            </p>
+          )}
         </div>
 
         {/* General Info + Pricing */}
