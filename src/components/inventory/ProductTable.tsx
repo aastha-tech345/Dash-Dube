@@ -1,4 +1,5 @@
-import { Package } from 'lucide-react';
+import { Package, Edit, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { Product } from '@/types/inventory';
 import Pagination from '@/components/shared/Pagination';
 
@@ -6,9 +7,16 @@ interface ProductTableProps {
   products: Product[];
   loading?: boolean;
   onStatusToggle?: (id: string, status: 'Active' | 'Inactive') => void;
+  onDelete?: (id: string) => void;
 }
 
-export default function ProductTable({ products, loading, onStatusToggle }: ProductTableProps) {
+export default function ProductTable({ products, loading, onStatusToggle, onDelete }: ProductTableProps) {
+  const navigate = useNavigate();
+
+  const handleEdit = (id: string) => {
+    navigate(`/inventory/add?id=${id}`);
+  };
+
   if (loading) {
     return (
       <div className="section-card p-12 text-center">
@@ -28,6 +36,7 @@ export default function ProductTable({ products, loading, onStatusToggle }: Prod
             <th>Purchase Price</th>
             <th>Sale Price</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -68,11 +77,29 @@ export default function ProductTable({ products, loading, onStatusToggle }: Prod
                   {p.status}
                 </button>
               </td>
+              <td>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleEdit(p.id)}
+                    className="p-1.5 hover:bg-primary/10 rounded text-primary transition-colors"
+                    title="Edit product"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => onDelete?.(p.id)}
+                    className="p-1.5 hover:bg-red-50 rounded text-red-600 transition-colors"
+                    title="Delete product"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
           {products.length === 0 && (
             <tr>
-              <td colSpan={6} className="text-center text-muted-foreground py-8">
+              <td colSpan={7} className="text-center text-muted-foreground py-8">
                 No products found.
               </td>
             </tr>

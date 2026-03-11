@@ -3,14 +3,16 @@ import { Link } from "react-router-dom";
 import { Plus, TrendingUp, AlertTriangle } from "lucide-react";
 import { inventorySummary } from "@/data/mockData";
 import { useWarehouseProducts } from "@/hooks/useWarehouseProducts";
+import { useToast } from "@/hooks/use-toast";
 import ProductFilters from "@/components/inventory/ProductFilters";
 import ProductTable from "@/components/inventory/ProductTable";
 
 export default function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const { toast } = useToast();
   
-  const { products: apiProducts, loading, error } = useWarehouseProducts();
+  const { products: apiProducts, loading, error, refetch, deleteProduct, updateProduct } = useWarehouseProducts();
   
   // Filter products based on search and category
   const filteredProducts = apiProducts.filter((p) => {
@@ -23,16 +25,59 @@ export default function Inventory() {
   
   // Convert API products to display format
   const products = filteredProducts.map(p => ({
-    id: p.sku,
+    id: String(p.id),
     name: p.name,
     sub: p.categoryName,
     category: p.categoryName,
-    purchasePrice: `$${p.purchasePrice.toFixed(2)}`,
-    salePrice: `$${p.salePrice.toFixed(2)}`,
+    purchasePrice: `${p.purchasePrice.toFixed(2)}`,
+    salePrice: `${p.salePrice.toFixed(2)}`,
     status: p.isActive ? 'Active' : 'Inactive' as 'Active' | 'Inactive'
   }));
   
   const categories = [...new Set(apiProducts.map((p) => p.categoryName))];
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
+
+    try {
+      await deleteProduct(Number(id));
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete product",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleStatusToggle = async (id: string, newStatus: 'Active' | 'Inactive') => {
+    try {
+      const product = apiProducts.find(p => String(p.id) === id);
+      if (!product) return;
+
+      await updateProduct(Number(id), {
+        ...product,
+        isActive: newStatus === 'Active'
+      });
+      
+      toast({
+        title: "Success",
+        description: "Product status updated successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update product status",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div>
@@ -63,10 +108,8 @@ export default function Inventory() {
       <ProductTable
         products={products}
         loading={loading}
-        onStatusToggle={(id, status) => {
-          console.log('Toggle status:', id, status);
-          // Implement status toggle with API
-        }}
+        onStatusToggle={handleStatusToggle}
+        onDelete={handleDelete}
       />
 
       {/* Summary Cards */}
