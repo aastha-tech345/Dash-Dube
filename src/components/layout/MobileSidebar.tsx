@@ -50,7 +50,7 @@ export default function MobileSidebar({ open, onClose }: Props) {
                   width: "40px",
                   height: "40px",
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, #0d6efd, #20c997)",
+              background: "linear-gradient(135deg, #dfe0ec, #1a237e)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -71,11 +71,11 @@ export default function MobileSidebar({ open, onClose }: Props) {
                     fontSize: "22px",
                     fontWeight: "800",
                     letterSpacing: "1px",
-                    color: "#0d6efd",
+                    color: "#1a237e",
                   }}
                 >
                   Ware
-                  <span style={{ color: "#20c997", marginLeft: "4px" }}>
+                  <span style={{ color: "#1a237e", marginLeft: "4px" }}>
                     House
                   </span>
                 </div>
