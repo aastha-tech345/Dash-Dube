@@ -1,4 +1,5 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
   Package,
@@ -26,6 +27,13 @@ interface Props {
 
 export default function MobileSidebar({ open, onClose }: Props) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
@@ -121,7 +129,7 @@ export default function MobileSidebar({ open, onClose }: Props) {
             <Settings className="w-4 h-4" />
             <span>Settings</span>
           </button>
-          <button className="sidebar-link w-full text-red-500">
+          <button className="sidebar-link w-full text-red-500" onClick={handleLogout}>
             <LogOut className="w-4 h-4" />
             <span>Logout</span>
           </button>

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { authApi } from '@/lib/auth';
+import { warehouseApi } from '@/services/warehouseApi';
 import { LoginRequest } from '@/types/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,7 +34,7 @@ const Login = () => {
   });
 
   const loginMutation = useMutation({
-    mutationFn: (credentials: LoginRequest) => authApi.login(credentials),
+    mutationFn: (credentials: LoginRequest) => warehouseApi.login(credentials),
     onSuccess: (data) => {
       login(data);
       navigate('/', { replace: true });
