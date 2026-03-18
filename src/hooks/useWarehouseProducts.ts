@@ -56,5 +56,7 @@ export function useWarehouseProducts() {
     }
   };
 
+
+
   return { products, loading, error, refetch: fetchProducts, createProduct, updateProduct, deleteProduct };
 }

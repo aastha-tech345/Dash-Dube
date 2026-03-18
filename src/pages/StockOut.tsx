@@ -102,7 +102,7 @@ export default function StockOut() {
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="page-title flex items-center gap-2">
-            <ArrowUpCircle className="w-6 h-6 text-blue-500" />
+            <ArrowUpCircle className="w-6 h-6" style={{ color: "#1a237e", fontWeight: "bold" }} />
             Stock Out
           </h1>
           <p className="page-subtitle">Record outgoing stock and shipments</p>

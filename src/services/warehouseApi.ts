@@ -150,7 +150,6 @@ class WarehouseApiService {
   async getProducts(): Promise<WareProductResponse[]> {
     return this.request<WareProductResponse[]>('/warehouse/products');
   }
-
   async getProductsPaginated(page = 0, size = 10, sort?: string): Promise<PaginatedResponse<WareProductResponse>> {
     const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
     if (sort) params.append('sort', sort);
@@ -610,5 +609,7 @@ class WarehouseApiService {
     return this.request<void>(`/warehouse/inventory-movements/${id}`, { method: 'DELETE' });
   }
 }
+
+
 
 export const warehouseApi = new WarehouseApiService();

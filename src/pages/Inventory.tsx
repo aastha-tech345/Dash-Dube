@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, AlertTriangle } from "lucide-react";
+import { Plus, CopyPlus,FileDown ,Download ,TrendingUp, AlertTriangle } from "lucide-react";
 import { inventorySummary } from "@/data/mockData";
 import { useWarehouseProducts } from "@/hooks/useWarehouseProducts";
 import { warehouseApi } from "@/services/warehouseApi";
@@ -67,9 +67,21 @@ export default function Inventory() {
           <h1 className="page-title">Product Inventory</h1>
           <p className="page-subtitle">Warehouse Management / Inventory</p>
         </div>
-        <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
+        <div className="flex items-end justify-between gap-2">
+               <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
           <Plus className="w-4 h-4" /> Add Product
         </Link>
+          <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
+          <CopyPlus className="w-4 h-4" /> Add Multiple Product
+        </Link>
+          <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
+          <FileDown  className="w-4 h-4" /> Export
+        </Link>
+          <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
+          <Download className="w-4 h-4" /> Download Template
+        </Link>
+        </div>
+        
       </div>
 
       {error && (

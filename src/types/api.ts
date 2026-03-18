@@ -512,7 +512,6 @@ export interface PaginatedResponse<T> {
   first: boolean;
   last: boolean;
 }
-=======
 // Authentication Types
 export interface LoginRequest {
   tenantId: string;

@@ -81,7 +81,7 @@ export default function StockIn() {
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="page-title flex items-center gap-2">
-            <ArrowDownCircle className="w-6 h-6 text-emerald-500" />
+            <ArrowDownCircle className="w-6 h-6 " style={{color:"#1a237e",fontWeight:"bold"}} />
             Stock In
           </h1>
           <p className="page-subtitle">Record incoming stock and deliveries</p>
