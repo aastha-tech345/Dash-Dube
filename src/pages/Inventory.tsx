@@ -1,17 +1,82 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Plus, CopyPlus,FileDown ,Download ,TrendingUp, AlertTriangle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, CopyPlus, FileDown, Download, TrendingUp, AlertTriangle } from "lucide-react";
 import { inventorySummary } from "@/data/mockData";
 import { useWarehouseProducts } from "@/hooks/useWarehouseProducts";
 import { warehouseApi } from "@/services/warehouseApi";
 import { useToast } from "@/hooks/use-toast";
+import BulkUploadModal from "@/components/inventory/BulkUploadModal";
 import ProductFilters from "@/components/inventory/ProductFilters";
 import ProductTable from "@/components/inventory/ProductTable";
 
 export default function Inventory() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [templateDownloading, setTemplateDownloading] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
+  const navigate = useNavigate();
   const { toast } = useToast();
+
+  const triggerDownload = (blob: Blob, fallbackName: string, disposition: string | null) => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_self';
+    a.download = disposition?.match(/filename="?([^"]+)"?/)?.[1] ?? fallbackName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://thegtrgroup.com/api';
+      const token = localStorage.getItem('auth_token');
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (categoryFilter) params.append('category', categoryFilter);
+      const query = params.toString() ? `?${params.toString()}` : '';
+      const response = await fetch(`${API_BASE_URL}/warehouse/products/export${query}`, {
+        headers: { ...(token && { 'Authorization': `Bearer ${token}` }) },
+      });
+      if (!response.ok) throw new Error(`Export failed: ${response.statusText}`);
+      const blob = await response.blob();
+      triggerDownload(blob, 'products_export.xlsx', response.headers.get('content-disposition'));
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to export",
+        variant: "destructive",
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    setTemplateDownloading(true);
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://thegtrgroup.com/api';
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(`${API_BASE_URL}/warehouse/product/template`, {
+        headers: { ...(token && { 'Authorization': `Bearer ${token}` }) },
+      });
+      if (!response.ok) throw new Error(`Failed to download: ${response.statusText}`);
+      const blob = await response.blob();
+      triggerDownload(blob, 'product_template.xlsx', response.headers.get('content-disposition'));
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to download template",
+        variant: "destructive",
+      });
+    } finally {
+      setTemplateDownloading(false);
+    }
+  };
   
   const { products: apiProducts, loading, error, refetch } = useWarehouseProducts();
   
@@ -61,6 +126,7 @@ export default function Inventory() {
   };
 
   return (
+    <>
     <div>
       <div className="flex items-start justify-between mb-6">
         <div>
@@ -68,18 +134,28 @@ export default function Inventory() {
           <p className="page-subtitle">Warehouse Management / Inventory</p>
         </div>
         <div className="flex items-end justify-between gap-2">
-               <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Add Product
-        </Link>
-          <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
-          <CopyPlus className="w-4 h-4" /> Add Multiple Product
-        </Link>
-          <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
-          <FileDown  className="w-4 h-4" /> Export
-        </Link>
-          <Link to="/inventory/add" className="btn-primary flex items-center gap-2">
-          <Download className="w-4 h-4" /> Download Template
-        </Link>
+          <button onClick={() => navigate('/inventory/add')} className="btn-primary flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Add Product
+          </button>
+          <button onClick={() => setBulkUploadOpen(true)} className="btn-primary flex items-center gap-2">
+            <CopyPlus className="w-4 h-4" /> Add Multiple Product
+          </button>
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="btn-primary flex items-center gap-2 disabled:opacity-60"
+          >
+            <FileDown className="w-4 h-4" />
+            {exporting ? 'Exporting...' : 'Export'}
+          </button>
+          <button
+            onClick={handleDownloadTemplate}
+            disabled={templateDownloading}
+            className="btn-primary flex items-center gap-2 disabled:opacity-60"
+          >
+            <Download className="w-4 h-4" />
+            {templateDownloading ? 'Downloading...' : 'Download Template'}
+          </button>
         </div>
         
       </div>
@@ -138,5 +214,13 @@ export default function Inventory() {
         </div>
       </div>
     </div>
+
+    {bulkUploadOpen && (
+      <BulkUploadModal
+        onClose={() => setBulkUploadOpen(false)}
+        onSuccess={() => { setBulkUploadOpen(false); refetch(); }}
+      />
+    )}
+    </>
   );
 }

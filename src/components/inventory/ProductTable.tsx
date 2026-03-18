@@ -1,7 +1,9 @@
-import { Package, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Package, Pencil, Trash2, Barcode } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Product } from '@/types/inventory';
 import Pagination from '@/components/shared/Pagination';
+import BarcodeModal from '@/components/inventory/BarcodeModal';
 
 interface ProductTableProps {
   products: Product[];
@@ -12,6 +14,7 @@ interface ProductTableProps {
 
 export default function ProductTable({ products, loading, onStatusToggle, onDelete }: ProductTableProps) {
   const navigate = useNavigate();
+  const [barcodeProduct, setBarcodeProduct] = useState<{ sku: string; name: string } | null>(null);
 
   const handleEdit = (productId: string) => {
     navigate(`/inventory/add?id=${productId}`);
@@ -26,6 +29,7 @@ export default function ProductTable({ products, loading, onStatusToggle, onDele
   }
 
   return (
+    <>
     <div className="section-card mb-6 overflow-x-auto">
       <table className="data-table">
         <thead>
@@ -36,6 +40,7 @@ export default function ProductTable({ products, loading, onStatusToggle, onDele
             <th>Purchase Price</th>
             <th>Sale Price</th>
             <th>Status</th>
+            <th>Barcode</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -78,6 +83,15 @@ export default function ProductTable({ products, loading, onStatusToggle, onDele
                 </button>
               </td>
               <td>
+                <button
+                  onClick={() => setBarcodeProduct({ sku: p.sku ?? p.id, name: p.name })}
+                  className="p-1.5 hover:bg-primary/10 rounded text-primary transition-colors"
+                  title="View Barcode"
+                >
+                  <Barcode className="w-4 h-4" />
+                </button>
+              </td>
+              <td>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleEdit(p.id)}
@@ -99,7 +113,7 @@ export default function ProductTable({ products, loading, onStatusToggle, onDele
           ))}
           {products.length === 0 && (
             <tr>
-              <td colSpan={7} className="text-center text-muted-foreground py-8">
+              <td colSpan={8} className="text-center text-muted-foreground py-8">
                 No products found.
               </td>
             </tr>
@@ -114,5 +128,13 @@ export default function ProductTable({ products, loading, onStatusToggle, onDele
         />
       )}
     </div>
+    {barcodeProduct && (
+      <BarcodeModal
+        sku={barcodeProduct.sku}
+        productName={barcodeProduct.name}
+        onClose={() => setBarcodeProduct(null)}
+      />
+    )}
+    </>
   );
 }
