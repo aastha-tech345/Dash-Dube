@@ -10,6 +10,19 @@ export default defineConfig({
     hmr: {
       overlay: false,
     },
+    proxy: {
+      '/api': {
+        target: 'https://thegtrgroup.com',
+        changeOrigin: true,
+        secure: true,
+        configure: (proxy) => {
+          proxy.on('error', (err) => console.log('proxy error', err));
+          proxy.on('proxyReq', (proxyReq, req) => {
+            console.log('Proxying:', req.method, req.url);
+          });
+        },
+      },
+    },
   },
   plugins: [react()],
   resolve: {

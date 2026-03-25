@@ -23,6 +23,18 @@ import StockIn from "./pages/StockIn";
 import StockOut from "./pages/StockOut";
 import NotFound from "./pages/NotFound";
 import CreateAbhi from "./pages/shelf/CreateAbhi";
+import TransferOrders from "./pages/warehouse/TransferOrders";
+import Drivers from "./pages/fleet/Drivers";
+import Vehicles from "./pages/fleet/Vehicles";
+import FleetRoutes from "./pages/fleet/Routes";
+import DeliveryOrders from "./pages/sales/DeliveryOrders";
+import Quotations from "./pages/sales/Quotations";
+import SalesOrders from "./pages/sales/SalesOrders";
+import SalesInvoices from "./pages/sales/SalesInvoices";
+import SalesProducts from "./pages/crm/SalesProducts";
+import RawMaterials from "./pages/production/RawMaterials";
+import SemiFinished from "./pages/production/SemiFinished";
+import FinishedGoods from "./pages/production/FinishedGoods";
 
 const queryClient = new QueryClient();
 
@@ -56,8 +68,24 @@ const AppRoutes = () => {
                 <Route path="/infrastructure/create-shelf" element={<CreateShelf />} />
                 <Route path="/infrastructure/create-abhi" element={<CreateAbhi />} />
                 <Route path="/infrastructure/create-bin" element={<CreateBin />} />
+                <Route path="/warehouse/transfers" element={<TransferOrders />} />
                 <Route path="/stock-in" element={<StockIn />} />
                 <Route path="/stock-out" element={<StockOut />} />
+                {/* Fleet */}
+                <Route path="/fleet/drivers" element={<Drivers />} />
+                <Route path="/fleet/vehicles" element={<Vehicles />} />
+                <Route path="/fleet/routes" element={<FleetRoutes />} />
+                {/* Sales */}
+                <Route path="/sales/delivery-orders" element={<DeliveryOrders />} />
+                <Route path="/sales/quotations" element={<Quotations />} />
+                <Route path="/sales/orders" element={<SalesOrders />} />
+                <Route path="/sales/invoices" element={<SalesInvoices />} />
+                {/* CRM */}
+                <Route path="/crm/sales-products" element={<SalesProducts />} />
+                {/* Production */}
+                <Route path="/production/raw-materials" element={<RawMaterials />} />
+                <Route path="/production/semi-finished" element={<SemiFinished />} />
+                <Route path="/production/finished-goods" element={<FinishedGoods />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

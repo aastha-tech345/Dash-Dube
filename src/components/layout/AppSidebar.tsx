@@ -8,15 +8,50 @@ import {
   ArrowUpRight,
   Settings,
   LogOut,
-  ArrowLeft,
+  ArrowLeftRight,
+  Truck,
+  UserCheck,
+  MapPin,
+  PackageCheck,
+  ShoppingBag,
+  FlaskConical,
+  Layers,
+  Package2,
+  FileText,
+  ShoppingCart,
+  Receipt,
 } from "lucide-react";
 
-const navItems = [
+const warehouseNav = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
   { label: "Inventory", path: "/inventory", icon: Package },
   { label: "Infrastructure", path: "/infrastructure", icon: Grid3X3 },
   { label: "Stock In", path: "/stock-in", icon: CheckSquare },
   { label: "Stock Out", path: "/stock-out", icon: ArrowUpRight },
+  { label: "Transfers", path: "/warehouse/transfers", icon: ArrowLeftRight },
+];
+
+const fleetNav = [
+  { label: "Drivers", path: "/fleet/drivers", icon: UserCheck },
+  { label: "Vehicles", path: "/fleet/vehicles", icon: Truck },
+  { label: "Routes", path: "/fleet/routes", icon: MapPin },
+];
+
+const salesNav = [
+  { label: "Quotations", path: "/sales/quotations", icon: FileText },
+  { label: "Sales Orders", path: "/sales/orders", icon: ShoppingCart },
+  { label: "Delivery Orders", path: "/sales/delivery-orders", icon: PackageCheck },
+  { label: "Invoices", path: "/sales/invoices", icon: Receipt },
+];
+
+const crmNav = [
+  { label: "Sales Products", path: "/crm/sales-products", icon: ShoppingBag },
+];
+
+const productionNav = [
+  { label: "Raw Materials", path: "/production/raw-materials", icon: FlaskConical },
+  { label: "Semi-Finished", path: "/production/semi-finished", icon: Layers },
+  { label: "Finished Goods", path: "/production/finished-goods", icon: Package2 },
 ];
 
 export default function AppSidebar() {
@@ -99,13 +134,53 @@ export default function AppSidebar() {
         </span>
       </div>
 
-      <nav className="flex-1 px-2">
-        {navItems.map((item) => (
+      <nav className="flex-1 px-2 overflow-y-auto">
+        {warehouseNav.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             className={`sidebar-link ${isActive(item.path) ? "active" : ""}`}
           >
+            <item.icon className="w-4 h-4" />
+            <span>{item.label}</span>
+          </Link>
+        ))}
+
+        <div className="px-2 pt-4 pb-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Fleet</span>
+        </div>
+        {fleetNav.map((item) => (
+          <Link key={item.path} to={item.path} className={`sidebar-link ${isActive(item.path) ? "active" : ""}`}>
+            <item.icon className="w-4 h-4" />
+            <span>{item.label}</span>
+          </Link>
+        ))}
+
+        <div className="px-2 pt-4 pb-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Sales</span>
+        </div>
+        {salesNav.map((item) => (
+          <Link key={item.path} to={item.path} className={`sidebar-link ${isActive(item.path) ? "active" : ""}`}>
+            <item.icon className="w-4 h-4" />
+            <span>{item.label}</span>
+          </Link>
+        ))}
+
+        <div className="px-2 pt-4 pb-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">CRM</span>
+        </div>
+        {crmNav.map((item) => (
+          <Link key={item.path} to={item.path} className={`sidebar-link ${isActive(item.path) ? "active" : ""}`}>
+            <item.icon className="w-4 h-4" />
+            <span>{item.label}</span>
+          </Link>
+        ))}
+
+        <div className="px-2 pt-4 pb-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Production</span>
+        </div>
+        {productionNav.map((item) => (
+          <Link key={item.path} to={item.path} className={`sidebar-link ${isActive(item.path) ? "active" : ""}`}>
             <item.icon className="w-4 h-4" />
             <span>{item.label}</span>
           </Link>
