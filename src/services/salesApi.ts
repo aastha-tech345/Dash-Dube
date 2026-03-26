@@ -27,6 +27,14 @@ class SalesApiService {
       },
     };
     const response = await fetch(url, requestOptions);
+
+    // Backend bug: returns 405 but still processes the request (POST/PATCH/PUT)
+    if (response.status === 405 && ['POST', 'PATCH', 'PUT'].includes(options?.method ?? '')) {
+      const text = await response.text();
+      if (!text) return undefined as T;
+      try { return JSON.parse(text) as T; } catch { return undefined as T; }
+    }
+
     if (!response.ok) {
       const text = await response.text();
       throw new Error(text || `API Error: ${response.status}`);
@@ -60,7 +68,15 @@ class SalesApiService {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: form,
-    }).then(r => { if (!r.ok) return r.text().then(t => { throw new Error(t); }); return r.json(); });
+    }).then(async r => {
+      if (r.status === 405) {
+        const text = await r.text();
+        if (!text) return undefined as unknown as DeliveryOrderResponse;
+        try { return JSON.parse(text) as DeliveryOrderResponse; } catch { return undefined as unknown as DeliveryOrderResponse; }
+      }
+      if (!r.ok) return r.text().then(t => { throw new Error(t || `Error ${r.status}`); });
+      return r.json();
+    });
   }
 
   deleteDeliveryOrder(id: number): Promise<void> {
@@ -124,7 +140,10 @@ class SalesApiService {
   // ── Quotations ──────────────────────────────────────────────────────────────
   getQuotations(params?: { page?: number; size?: number }): Promise<PaginatedResponse<QuotationResponse>> {
     const p = new URLSearchParams({ page: String(params?.page ?? 0), size: String(params?.size ?? 10) });
-    return this.request(`/api/sales/quotations?${p}`);
+    return this.request<PaginatedResponse<QuotationResponse>>(`/api/sales/quotations?${p}`).then(data => {
+      console.log('GET /api/sales/quotations raw:', data);
+      return data;
+    });
   }
 
   getQuotationById(id: number): Promise<QuotationResponse> {
@@ -140,7 +159,16 @@ class SalesApiService {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: form,
-    }).then(r => { if (!r.ok) return r.text().then(t => { throw new Error(t); }); return r.json(); });
+    }).then(async r => {
+      // 405 workaround: backend processes but returns wrong status
+      if (r.status === 405) {
+        const text = await r.text();
+        if (!text) return undefined as unknown as QuotationResponse;
+        try { return JSON.parse(text) as QuotationResponse; } catch { return undefined as unknown as QuotationResponse; }
+      }
+      if (!r.ok) return r.text().then(t => { throw new Error(t || `API Error: ${r.status}`); });
+      return r.json();
+    });
   }
 
   updateQuotationStatus(id: number, status: QuotationStatus): Promise<QuotationResponse> {

@@ -23,11 +23,17 @@ export interface StockTransaction {
 }
 
 export interface Warehouse {
+  id?: number;
   code: string;
   name: string;
   type: string;
-  zones: string;
+  zones?: string;
   status: string;
+  address?: string;
+  capacity?: number;
+  currentUtilization?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Zone {

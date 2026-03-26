@@ -38,7 +38,11 @@ export function useDrivers(status?: string) {
 
   const updateDriver = async (id: number, data: DriverRequest) => {
     const d = await fleetApi.updateDriver(id, data);
-    setAllDrivers(prev => prev.map(x => x.id === id ? d : x));
+    if (d) {
+      setAllDrivers(prev => prev.map(x => x.id === id ? d : x));
+    } else {
+      fetchAll();
+    }
     return d;
   };
 
@@ -82,7 +86,12 @@ export function useVehicles() {
 
   const updateVehicle = async (id: number, data: VehicleRequest) => {
     const v = await fleetApi.updateVehicle(id, data);
-    setVehicles(prev => prev.map(x => x.id === id ? v : x));
+    // server may return 405 with empty body (backend bug) — refetch to stay in sync
+    if (v) {
+      setVehicles(prev => prev.map(x => x.id === id ? v : x));
+    } else {
+      fetch(page);
+    }
     return v;
   };
 

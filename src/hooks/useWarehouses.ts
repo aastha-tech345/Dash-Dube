@@ -22,6 +22,7 @@ export function useWarehouses() {
           const data = await warehouseApi.getWarehouses();
           // Convert WareHouseResponse to Warehouse format
           const convertedWarehouses: Warehouse[] = data.map(item => ({
+            id: item.id,
             code: item.warehouseCode,
             name: item.warehouseName,
             type: item.warehouseType || 'Main Facility',
