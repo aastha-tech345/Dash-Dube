@@ -1,0 +1,502 @@
+================================================================
+PROJECT API CALLS ESTIMATE — WAREHOUSE MANAGEMENT SYSTEM
+================================================================
+
+----------------------------------------------------------------
+1. DASHBOARD (/)
+----------------------------------------------------------------
+Status: Currently using mock/static data — no live API calls active
+Note:   Real-time dashboard API integration is pending
+
+  Endpoint (defined but not yet connected to UI):
+  GET  /api/warehouse/dashboard
+
+
+----------------------------------------------------------------
+2. INVENTORY (/inventory)
+----------------------------------------------------------------
+
+  GET    /api/warehouse/products                  — Products list load
+  DELETE /api/warehouse/products/{id}             — Product delete
+  GET    /api/warehouse/products/export           — Export products (Excel)
+  GET    /api/warehouse/product/template          — Download upload template
+  POST   /api/warehouse/products/export           — Bulk upload (Excel file)
+
+
+----------------------------------------------------------------
+3. INFRASTRUCTURE — WAREHOUSES
+----------------------------------------------------------------
+
+  GET    /api/warehouse/warehouses                — List all warehouses
+  GET    /api/warehouse/warehouses/{id}           — Get by ID (edit mode load)
+  POST   /api/warehouse/warehouses                — Create warehouse
+  PUT    /api/warehouse/warehouses/{id}           — Update warehouse
+  DELETE /api/warehouse/warehouses/{id}           — Delete warehouse
+
+
+----------------------------------------------------------------
+4. INFRASTRUCTURE — FLOORS
+----------------------------------------------------------------
+
+  GET    /api/warehouse/floors                            — List all floors
+  GET    /api/warehouse/floors/{id}                       — Get by ID (edit mode load)
+  GET    /api/warehouse/floors/warehouse/{warehouseId}    — Floors by warehouse (dropdown)
+  POST   /api/warehouse/floors                            — Create floor
+  PUT    /api/warehouse/floors/{id}                       — Update floor
+  DELETE /api/warehouse/floors/{id}                       — Delete floor
+
+
+----------------------------------------------------------------
+5. INFRASTRUCTURE — ZONES
+----------------------------------------------------------------
+
+  GET    /api/warehouse/zones                     — List all zones
+  GET    /api/warehouse/zones/{id}                — Get by ID (edit mode load)
+  POST   /api/warehouse/zones                     — Create zone
+  PUT    /api/warehouse/zones/{id}                — Update zone
+  DELETE /api/warehouse/zones/{id}                — Delete zone
+
+
+----------------------------------------------------------------
+6. INFRASTRUCTURE — RACKS
+----------------------------------------------------------------
+
+  GET    /api/warehouse/racks                     — List all racks
+  GET    /api/warehouse/racks/{id}                — Get by ID (edit mode load)
+  POST   /api/warehouse/racks                     — Create rack
+  PUT    /api/warehouse/racks/{id}                — Update rack
+  DELETE /api/warehouse/racks/{id}                — Delete rack
+
+
+----------------------------------------------------------------
+7. INFRASTRUCTURE — SHELVES
+----------------------------------------------------------------
+
+  GET    /api/warehouse/shelves                   — List all shelves
+  GET    /api/warehouse/shelves/{id}              — Get by ID (edit mode load)
+  POST   /api/warehouse/shelves                   — Create shelf
+  PUT    /api/warehouse/shelves/{id}              — Update shelf
+  DELETE /api/warehouse/shelves/{id}              — Delete shelf
+
+
+----------------------------------------------------------------
+8. INFRASTRUCTURE — BINS
+----------------------------------------------------------------
+
+  GET    /api/warehouse/bins                      — List all bins
+  GET    /api/warehouse/bins/{id}                 — Get by ID (edit mode load)
+  POST   /api/warehouse/bins                      — Create bin
+  PUT    /api/warehouse/bins/{id}                 — Update bin
+  DELETE /api/warehouse/bins/{id}                 — Delete bin
+
+
+----------------------------------------------------------------
+9. STOCK IN (/stock-in)
+----------------------------------------------------------------
+
+  GET    /api/warehouse/inventory-movements                       — All movements list
+  POST   /api/warehouse/inventory-movements                       — Create Stock In entry
+  PATCH  /api/warehouse/inventory-movements/{id}/quantity         — Update quantity
+  DELETE /api/warehouse/inventory-movements/{id}                  — Delete movement
+
+  Form load pe additional calls:
+  GET    /api/warehouse/products                  — Product dropdown
+  GET    /api/warehouse/warehouses                — Warehouse dropdown
+  GET    /api/warehouse/uom                       — Unit of Measure dropdown
+  GET    /api/warehouse/bins                      — Bin dropdown (filtered by warehouse)
+
+
+----------------------------------------------------------------
+10. STOCK OUT (/stock-out)
+----------------------------------------------------------------
+
+  GET    /api/warehouse/inventory-movements                           — All movements list
+  GET    /api/warehouse/inventory-movements/warehouse/{warehouseId}   — Stock check by warehouse
+  POST   /api/warehouse/inventory-movements                           — Create Stock Out entry
+  PATCH  /api/warehouse/inventory-movements/{id}/quantity             — Update quantity
+  DELETE /api/warehouse/inventory-movements/{id}                      — Delete movement
+
+  Form load pe additional calls:
+  GET    /api/warehouse/products                  — Product dropdown
+  GET    /api/warehouse/warehouses                — Warehouse dropdown
+  GET    /api/warehouse/uom                       — Unit of Measure dropdown
+  GET    /api/warehouse/bins                      — Bin dropdown (filtered by warehouse)
+
+
+================================================================
+SUMMARY
+================================================================
+
+  Module              | Total Endpoints
+  --------------------|----------------
+  Dashboard           | 0 live (mock data)
+  Inventory           | 5
+  Warehouses          | 5
+  Floors              | 6
+  Zones               | 5
+  Racks               | 5
+  Shelves             | 5
+  Bins                | 5
+  Stock In            | 8 (incl. form dropdowns)
+  Stock Out           | 9 (incl. form dropdowns)
+  --------------------|----------------
+  TOTAL UNIQUE APIs   | ~35+
+
+================================================================
+
+
+new upcoming api they not mention 
+
+================================================================
+NEW / UPCOMING APIs — NOT IN ORIGINAL SCOPE ABOVE
+================================================================
+(These are already implemented in the codebase but were not
+ part of the original paid project scope mentioned above)
+
+----------------------------------------------------------------
+A. AUTHENTICATION
+----------------------------------------------------------------
+
+  POST   /api/auth/login                          — User login (returns JWT token + roles + modules)
+
+
+----------------------------------------------------------------
+B. WAREHOUSE — PRODUCTS (Extended)
+----------------------------------------------------------------
+
+  GET    /api/warehouse/products/paginated        — Paginated products list
+  GET    /api/warehouse/products/{id}             — Get product by ID
+  GET    /api/warehouse/products/barcode/{barcode}— Get product by barcode
+  POST   /api/warehouse/products/import           — Bulk import products (Excel)
+  GET    /api/warehouse/products/alerts/low-stock — Low stock alert products
+  GET    /api/warehouse/products/alerts/overstock — Overstock alert products
+
+
+----------------------------------------------------------------
+C. WAREHOUSE — BATCHES
+----------------------------------------------------------------
+
+  GET    /api/warehouse/batches/product/{productId} — Batches by product
+  POST   /api/warehouse/batches                   — Create batch
+  PUT    /api/warehouse/batches/{id}              — Update batch
+  DELETE /api/warehouse/batches/{id}              — Delete batch
+
+
+----------------------------------------------------------------
+D. WAREHOUSE — SERIALS
+----------------------------------------------------------------
+
+  GET    /api/warehouse/serials/{serialNumber}    — Get serial by number
+  POST   /api/warehouse/serials                   — Create serial
+  PUT    /api/warehouse/serials/{id}              — Update serial
+  DELETE /api/warehouse/serials/{id}              — Delete serial
+
+
+----------------------------------------------------------------
+E. WAREHOUSE — CATEGORIES
+----------------------------------------------------------------
+
+  GET    /api/warehouse/categories                — List all categories
+  GET    /api/warehouse/categories/{id}           — Get category by ID
+  POST   /api/warehouse/categories                — Create category
+  PUT    /api/warehouse/categories/{id}           — Update category
+  DELETE /api/warehouse/categories/{id}           — Delete category
+
+
+----------------------------------------------------------------
+F. WAREHOUSE — SUB-CATEGORIES
+----------------------------------------------------------------
+
+  GET    /api/warehouse/sub-categories            — List all sub-categories (optional ?categoryId=)
+  POST   /api/warehouse/sub-categories            — Create sub-category
+  PUT    /api/warehouse/sub-categories/{id}       — Update sub-category
+  DELETE /api/warehouse/sub-categories/{id}       — Delete sub-category
+
+
+----------------------------------------------------------------
+G. WAREHOUSE — TAXES
+----------------------------------------------------------------
+
+  GET    /api/warehouse/taxes                     — List all taxes
+  POST   /api/warehouse/taxes                     — Create tax
+  PUT    /api/warehouse/taxes/{id}                — Update tax
+  DELETE /api/warehouse/taxes/{id}                — Delete tax
+
+
+----------------------------------------------------------------
+H. WAREHOUSE — UNIT OF MEASURE (UoM)
+----------------------------------------------------------------
+
+  GET    /api/warehouse/uom                       — List all UoMs
+  POST   /api/warehouse/uom                       — Create UoM
+  PUT    /api/warehouse/uom/{id}                  — Update UoM
+  DELETE /api/warehouse/uom/{id}                  — Delete UoM
+
+
+----------------------------------------------------------------
+I. WAREHOUSE — LOCATIONS
+----------------------------------------------------------------
+
+  GET    /api/locations                           — List all locations
+  POST   /api/locations                           — Create location
+  PUT    /api/locations/{id}                      — Update location
+
+
+----------------------------------------------------------------
+J. WAREHOUSE — INFRASTRUCTURE (Extended Filters)
+----------------------------------------------------------------
+
+  GET    /api/warehouse/warehouses/code/{code}            — Get warehouse by code
+  GET    /api/warehouse/warehouses/status?isActive=       — Warehouses by active status
+  GET    /api/warehouse/warehouses/type/{type}            — Warehouses by type
+
+  GET    /api/warehouse/floors/status?isActive=           — Floors by active status
+
+  GET    /api/warehouse/zones/status?isActive=            — Zones by active status
+  GET    /api/warehouse/zones/type/{type}                 — Zones by type
+
+  GET    /api/warehouse/racks/status?isActive=            — Racks by active status
+  GET    /api/warehouse/racks/type/{type}                 — Racks by type
+  GET    /api/warehouse/racks/barcode/{barcode}           — Rack by barcode
+
+  GET    /api/warehouse/shelves/status?isActive=          — Shelves by active status
+  GET    /api/warehouse/shelves/barcode/{barcode}         — Shelf by barcode
+
+  GET    /api/warehouse/bins/paginated                    — Bins paginated
+  GET    /api/warehouse/bins/active?isActive=             — Bins by active status
+  GET    /api/warehouse/bins/type/{type}                  — Bins by type
+  GET    /api/warehouse/bins/barcode/{barcode}            — Bin by barcode
+
+
+----------------------------------------------------------------
+K. WAREHOUSE — INVENTORY MOVEMENTS (Extended)
+----------------------------------------------------------------
+
+  GET    /api/warehouse/inventory-movements/{id}          — Get movement by ID
+  GET    /api/warehouse/inventory-movements/status/{status} — Movements by status
+
+
+----------------------------------------------------------------
+L. WAREHOUSE — TRANSFER ORDERS
+----------------------------------------------------------------
+
+  GET    /api/warehouse/transfers                         — List all transfers (paginated)
+  GET    /api/warehouse/transfers/{id}                    — Get transfer by ID
+  GET    /api/warehouse/transfers/status/{status}         — Transfers by status (paginated)
+  POST   /api/warehouse/transfers                         — Create transfer order
+  PUT    /api/warehouse/transfers/{id}/approve            — Approve transfer
+  PUT    /api/warehouse/transfers/{id}/dispatch           — Dispatch transfer (with items)
+  PUT    /api/warehouse/transfers/{id}/receive            — Receive transfer (with items)
+  PUT    /api/warehouse/transfers/{id}/cancel             — Cancel transfer
+
+
+----------------------------------------------------------------
+M. WAREHOUSE — STOCK ALERTS
+----------------------------------------------------------------
+
+  GET    /api/warehouse/stock-alerts?expiryDays=          — Stock expiry alerts
+
+
+----------------------------------------------------------------
+N. WAREHOUSE — COSTING
+----------------------------------------------------------------
+
+  GET    /api/warehouse/costing/summary                   — Costing summary (optional ?warehouseId=)
+  GET    /api/warehouse/costing/product/{productId}       — Product costing (optional ?warehouseId=)
+
+
+----------------------------------------------------------------
+O. WAREHOUSE — DASHBOARD (Live)
+----------------------------------------------------------------
+
+  GET    /api/warehouse/dashboard                         — Dashboard stats (now live)
+
+
+----------------------------------------------------------------
+P. WAREHOUSE — REPORTS
+----------------------------------------------------------------
+
+  GET    /api/warehouse/reports/stock-ledger              — Stock ledger (?productId=&from=&to=)
+  GET    /api/warehouse/reports/stock-valuation           — Stock valuation (optional ?warehouseId=)
+  GET    /api/warehouse/reports/transfer-history          — Transfer history (?from=&to=)
+  GET    /api/warehouse/reports/delivery-performance      — Delivery performance (?from=&to=)
+
+
+----------------------------------------------------------------
+Q. PRODUCTION — RAW MATERIALS
+----------------------------------------------------------------
+
+  GET    /api/production/raw-materials                    — List (paginated)
+  GET    /api/production/raw-materials/{id}               — Get by ID
+  GET    /api/production/raw-materials/by-item-code/{code}— Get by item code
+  POST   /api/production/raw-materials                    — Create (multipart with image)
+  PUT    /api/production/raw-materials/{id}               — Update (multipart with image)
+  PUT    /api/production/raw-materials/{id}/stock-quantity?quantity= — Update stock qty
+  DELETE /api/production/raw-materials/{id}               — Delete
+  GET    /api/production/raw-materials/{id}/image         — Get image
+  GET    /api/production/raw-materials/{id}/barcode-image — Get barcode image
+  GET    /api/production/raw-materials/export             — Export to Excel
+  GET    /api/production/raw-materials/bulk-template      — Download bulk import template
+  POST   /api/production/raw-materials/bulk               — Bulk import (Excel)
+
+
+----------------------------------------------------------------
+R. PRODUCTION — SEMI-FINISHED GOODS
+----------------------------------------------------------------
+
+  GET    /api/production/semi-finished                    — List (paginated)
+  GET    /api/production/semi-finished/{id}               — Get by ID
+  POST   /api/production/semi-finished                    — Create (multipart with image)
+  PUT    /api/production/semi-finished/{id}               — Update (multipart with image)
+  DELETE /api/production/semi-finished/{id}               — Delete
+  GET    /api/production/semi-finished/{id}/image         — Get image
+
+
+----------------------------------------------------------------
+S. PRODUCTION — FINISHED GOODS
+----------------------------------------------------------------
+
+  GET    /api/production/finished-goods                   — List (paginated)
+  GET    /api/production/finished-goods/{id}              — Get by ID
+  POST   /api/production/finished-goods                   — Create (multipart with image)
+  PUT    /api/production/finished-goods/{id}              — Update (multipart with image)
+  DELETE /api/production/finished-goods/{id}              — Delete
+  GET    /api/production/finished-goods/{id}/image        — Get image
+
+
+----------------------------------------------------------------
+T. CRM — SALES PRODUCTS
+----------------------------------------------------------------
+
+  GET    /api/crm/sales-products                          — List (paginated)
+  GET    /api/crm/sales-products/{id}                     — Get by ID
+  POST   /api/crm/sales-products                          — Create (JSON or multipart with image)
+  PUT    /api/crm/sales-products/{id}                     — Update (JSON or multipart with image)
+  DELETE /api/crm/sales-products/{id}                     — Delete
+  GET    /api/crm/sales-products/{id}/image               — Get product image
+  GET    /api/crm/sales-products/{id}/barcode             — Get product barcode
+
+
+----------------------------------------------------------------
+U. FLEET — DRIVERS
+----------------------------------------------------------------
+
+  GET    /api/fleet/drivers                               — List (paginated)
+  GET    /api/fleet/drivers/{id}                          — Get by ID
+  POST   /api/fleet/drivers                               — Create driver
+  PUT    /api/fleet/drivers/{id}                          — Update driver
+  DELETE /api/fleet/drivers/{id}                          — Delete driver
+  POST   /api/fleet/drivers/{id}/profile-image            — Upload driver profile image
+
+
+----------------------------------------------------------------
+V. FLEET — VEHICLES
+----------------------------------------------------------------
+
+  GET    /api/fleet/vehicles                              — List (paginated)
+  GET    /api/fleet/vehicles/{id}                         — Get by ID
+  POST   /api/fleet/vehicles                              — Create vehicle
+  PUT    /api/fleet/vehicles/{id}                         — Update vehicle
+  DELETE /api/fleet/vehicles/{id}                         — Delete vehicle
+
+
+----------------------------------------------------------------
+W. FLEET — ROUTES
+----------------------------------------------------------------
+
+  GET    /api/fleet/routes                                — List all routes
+  GET    /api/fleet/routes/{id}                           — Get by ID
+  POST   /api/fleet/routes                                — Create route
+  PUT    /api/fleet/routes/{id}                           — Update route
+  DELETE /api/fleet/routes/{id}                           — Delete route
+  PUT    /api/fleet/routes/stops/{stopId}/arrive          — Mark stop as arrived
+  PUT    /api/fleet/routes/stops/{stopId}/complete        — Mark stop as completed
+
+
+----------------------------------------------------------------
+X. SALES — DELIVERY ORDERS
+----------------------------------------------------------------
+
+  GET    /api/sales/delivery-orders                       — List (paginated, with search/date filters)
+  GET    /api/sales/delivery-orders/{id}                  — Get by ID
+  POST   /api/sales/delivery-orders                       — Create (multipart with attachments)
+  PUT    /api/sales/delivery-orders/{id}                  — Update (multipart with attachments)
+  DELETE /api/sales/delivery-orders/{id}                  — Delete
+  PATCH  /api/sales/delivery-orders/{id}/status?status=   — Update status
+  PUT    /api/sales/delivery-orders/{id}/assign-fleet     — Assign driver & vehicle
+  PUT    /api/sales/delivery-orders/{id}/start-picking    — Start picking
+  PUT    /api/sales/delivery-orders/{id}/confirm-packed   — Confirm packed
+  PUT    /api/sales/delivery-orders/{id}/dispatch         — Dispatch order
+  PUT    /api/sales/delivery-orders/{id}/mark-delivered   — Mark as delivered
+  POST   /api/sales/delivery-orders/{id}/pod              — Submit Proof of Delivery (multipart)
+  GET    /api/sales/delivery-orders/{id}/pod              — Get Proof of Delivery
+
+
+----------------------------------------------------------------
+Y. SALES — QUOTATIONS
+----------------------------------------------------------------
+
+  GET    /api/sales/quotations                            — List (paginated)
+  GET    /api/sales/quotations/{id}                       — Get by ID
+  POST   /api/sales/quotations                            — Create (multipart with attachments)
+  PATCH  /api/sales/quotations/{id}/status?status=        — Update quotation status
+  DELETE /api/sales/quotations/{id}                       — Delete
+
+
+----------------------------------------------------------------
+Z. SALES — SALES ORDERS
+----------------------------------------------------------------
+
+  GET    /api/sales/orders                                — List (paginated)
+  GET    /api/sales/orders/{id}                           — Get by ID
+  POST   /api/sales/orders/from-quotation/{quotationId}   — Create from quotation
+
+
+----------------------------------------------------------------
+AA. SALES — SALES INVOICES
+----------------------------------------------------------------
+
+  GET    /api/sales/sales-invoices                        — List (paginated)
+  GET    /api/sales/sales-invoices/{id}                   — Get by ID
+  POST   /api/sales/sales-invoices                        — Create (multipart with attachments)
+  DELETE /api/sales/sales-invoices/{id}                   — Delete
+  GET    /api/sales/sales-invoices/pdf/{id}               — Get invoice PDF
+
+
+================================================================
+NEW APIs SUMMARY
+================================================================
+
+  Module                      | New Endpoints
+  ----------------------------|---------------
+  Authentication              | 1
+  Warehouse Products (ext.)   | 6
+  Batches                     | 4
+  Serials                     | 4
+  Categories                  | 5
+  Sub-Categories              | 4
+  Taxes                       | 4
+  UoM                         | 4
+  Locations                   | 3
+  Infrastructure (ext.)       | 14
+  Inventory Movements (ext.)  | 2
+  Transfer Orders             | 8
+  Stock Alerts                | 1
+  Costing                     | 2
+  Dashboard (live)            | 1
+  Reports                     | 4
+  Production - Raw Materials  | 12
+  Production - Semi-Finished  | 6
+  Production - Finished Goods | 6
+  CRM - Sales Products        | 7
+  Fleet - Drivers             | 6
+  Fleet - Vehicles            | 5
+  Fleet - Routes              | 7
+  Sales - Delivery Orders     | 13
+  Sales - Quotations          | 5
+  Sales - Sales Orders        | 3
+  Sales - Sales Invoices      | 5
+  ----------------------------|---------------
+  TOTAL NEW APIs              | ~152
+
+================================================================
